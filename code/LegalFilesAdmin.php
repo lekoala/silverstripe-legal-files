@@ -7,14 +7,13 @@
  */
 class LegalFileAdmin extends ModelAdmin
 {
-
     private static $managed_models = array(
         'LegalFile', 'LegalFileType'
     );
-    private static $url_segment = 'legal-documents';
-    private static $menu_title = 'Legal Documents';
-    private static $awesome_icon = "fa-file-text";
-    public $showImportForm = false;
+    private static $url_segment    = 'legal-documents';
+    private static $menu_title     = 'Legal Documents';
+    private static $awesome_icon   = "fa-file-text";
+    public $showImportForm         = false;
 
     public function init()
     {
@@ -32,7 +31,7 @@ class LegalFileAdmin extends ModelAdmin
     public function getSearchContext()
     {
         $context = parent::getSearchContext();
-        $fields = $context->getFields();
+        $fields  = $context->getFields();
 
         $singl = singleton($this->modelClass);
 
@@ -47,18 +46,23 @@ class LegalFileAdmin extends ModelAdmin
 
         /* @var $gridfield GridField */
         $gridfield = $form->Fields()->dataFieldByName($this->modelClass);
-        $config = $gridfield->getConfig();
+        $config    = $gridfield->getConfig();
 
         if ($this->modelClass == 'LegalFile') {
             /* @var $cols GridFieldDataColumns */
             $cols = $gridfield->getConfig()->getComponentByType('GridFieldDataColumns');
-            $cols->setDisplayFields([
-                'Company.Title' => 'Company Name',
-                'Member.Fullname' => 'Member',
-                'Type.Title' => 'Type',
-                'ExpirationDate' => 'Expiration Date',
-                'ExpiresIn' => 'Expires In'
-            ]);
+
+            $fields = [
+                'Member.Title' => _t('LegalFile.MEMBER_TITLE', 'Member'),
+                'Type.Title' => _t('LegalFile.TYPE_TITLE', 'Document Type'),
+                'ExpirationDate' => _t('LegalFile.EXPIRATION_DATE',
+                    'Expiration Date'),
+                'ExpiresIn' => _t('LegalFile.EXPIRES_IN', 'Expires in'),
+            ];
+
+            $singl->extend('updateGridSummaryFields', $fields);
+
+            $cols->setDisplayFields($fields);
         }
         return $form;
     }
@@ -70,7 +74,7 @@ class LegalFileAdmin extends ModelAdmin
      */
     public static function getLegalFilesPath()
     {
-        return ASSETS_PATH . '/' . self::getLegalFilesDir();
+        return ASSETS_PATH.'/'.self::getLegalFilesDir();
     }
 
     /**
@@ -99,13 +103,14 @@ class LegalFileAdmin extends ModelAdmin
     public static function initLegalFilesFolder()
     {
         $folder = self::getBaseLegalFilesFolder();
-        $path = $folder->getFullPath();
+        $path   = $folder->getFullPath();
 
         // Restrict access to the storage folder
-        if (!is_file($path . DIRECTORY_SEPARATOR . '.htaccess')) {
-            $ressourcesPath = Director::baseFolder() . DIRECTORY_SEPARATOR . LEGALFILES_DIR . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR;
+        if (!is_file($path.DIRECTORY_SEPARATOR.'.htaccess')) {
+            $ressourcesPath = Director::baseFolder().DIRECTORY_SEPARATOR.LEGALFILES_DIR.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR;
 
-            copy($ressourcesPath . '.htaccess', $path . DIRECTORY_SEPARATOR . '.htaccess');
+            copy($ressourcesPath.'.htaccess',
+                $path.DIRECTORY_SEPARATOR.'.htaccess');
         }
     }
 }
