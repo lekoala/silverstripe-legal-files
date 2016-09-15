@@ -1,0 +1,17 @@
+---
+Name: legal-files
+After:
+  - 'framework/*'
+  - 'cms/*'
+---
+Member:
+  extensions:
+    - LegalFilesExtension
+LegalFile:
+  days_before_reminder: 60
+  validation_workflow: true
+  enable_storage: true
+  upload_folder: 'LegalFiles'
+Director:
+  rules:
+    '_legalfiles': 'LegalFilesController'
