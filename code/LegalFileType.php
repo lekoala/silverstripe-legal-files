@@ -28,7 +28,7 @@ class LegalFileType extends DataObject
     );
     private static $field_labels   = array(
         'CannotExpire' => "Cannot expire",
-        'ApplyOnlyTo' => "Apply only to",
+        'ApplyOnlyTo' => "Applies only to",
     );
     private static $default_sort   = array(
         'Title ASC'
