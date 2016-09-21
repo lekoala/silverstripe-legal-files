@@ -149,6 +149,9 @@ class LegalFile extends DataObject
         if (!$this->TypeID) {
             $result->error("Type must be defined");
         }
+        if(!$this->OwnerClass()) {
+            $result->error("Must have a owner");
+        }
         return $result;
     }
 
