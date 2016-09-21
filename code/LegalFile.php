@@ -197,9 +197,8 @@ class LegalFile extends DataObject
             }
         }
 
-        // Set upload path
-
         if (self::config()->enable_storage) {
+            // Set upload path
             /* @var $File UploadField */
             $File = $fields->dataFieldByName('File');
             $File->setCanAttachExisting(false);
@@ -255,7 +254,16 @@ class LegalFile extends DataObject
             if ($class != $ownerClass) {
                 $fields->removeByName($class.'ID');
             } else {
-                $fields->makeFieldReadonly($class.'ID');
+                if (class_exists('HasOnePickerField')) {
+                    $fields->replaceField($class.'ID',
+                        $picker = new HasOnePickerField($this, $class . 'ID',
+                        $this->fieldLabel($class), $this->$class()));
+
+                    $picker->getConfig()->removeComponentsByType('PickerFieldDeleteAction');
+                    $picker->enableEdit();
+                } else {
+                    $fields->makeFieldReadonly($class.'ID');
+                }
             }
         }
 
