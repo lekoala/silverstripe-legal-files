@@ -71,6 +71,16 @@ class LegalFile extends DataObject
         return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
     }
 
+    public function getTitle()
+    {
+        if (!$this->TypeID) {
+            return _t('LegalFile.NEW_LEGAL_DOCUMENT', 'New legal document');
+        }
+        $type  = $this->Type()->getTitle();
+        $owner = $this->OwnerObject()->getTitle();
+        return $type.' '._t('LegalFile.FOR', 'for').' '.$owner;
+    }
+
     public function getRowClass()
     {
         $stat = $this->Status;
@@ -149,12 +159,16 @@ class LegalFile extends DataObject
         if (!$this->TypeID) {
             $result->error("Type must be defined");
         }
-        if(!$this->OwnerClass()) {
+        if (!$this->OwnerClass()) {
             $result->error("Must have a owner");
         }
         return $result;
     }
 
+    /**
+     * @param string $forClass
+     * @return array
+     */
     public static function listTypes($forClass = null)
     {
         $q = LegalFileType::get();
@@ -165,6 +179,9 @@ class LegalFile extends DataObject
         return $q->map()->toArray();
     }
 
+    /**
+     * @return string
+     */
     public function OwnerClass()
     {
         $classes = LegalFilesExtension::listClassesWithLegalFile();
@@ -176,6 +193,42 @@ class LegalFile extends DataObject
             $f = $rel.'ID';
             if ($this->$f) {
                 return $cl;
+            }
+        }
+    }
+
+    /**
+     * @return DataObject
+     */
+    public function OwnerObject()
+    {
+        $classes = LegalFilesExtension::listClassesWithLegalFile();
+        $has_one = self::config()->has_one;
+        foreach ($has_one as $rel => $cl) {
+            if (!in_array($cl, $classes)) {
+                continue;
+            }
+            $f = $rel.'ID';
+            if ($this->$f) {
+                return $this->$rel();
+            }
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function OwnerID()
+    {
+        $classes = LegalFilesExtension::listClassesWithLegalFile();
+        $has_one = self::config()->has_one;
+        foreach ($has_one as $rel => $cl) {
+            if (!in_array($cl, $classes)) {
+                continue;
+            }
+            $f = $rel.'ID';
+            if ($this->$f) {
+                return $this->$f;
             }
         }
     }
@@ -256,18 +309,14 @@ class LegalFile extends DataObject
         foreach ($classes as $class) {
             if ($class != $ownerClass) {
                 $fields->removeByName($class.'ID');
-            } else {
-                if (class_exists('HasOnePickerField')) {
-                    $fields->replaceField($class.'ID',
-                        $picker = new HasOnePickerField($this, $class . 'ID',
-                        $this->fieldLabel($class), $this->$class()));
-
-                    $picker->getConfig()->removeComponentsByType('PickerFieldDeleteAction');
-                    $picker->enableEdit();
-                } else {
-                    $fields->makeFieldReadonly($class.'ID');
-                }
+                continue;
             }
+
+            $fieldName = $class.'ID';
+            $newField  = new GridField($fieldName, '', $class::get()->filter('ID',$this->OwnerID()),
+                GridFieldConfig_RecordViewer::create());
+            $newField->setModelClass($class);
+            $fields->replaceField($fieldName, $newField);
         }
 
         return $fields;

@@ -43,9 +43,42 @@ class LegalFilesExtension extends DataExtension
     {
         /* @var $legalFiles GridField */
         $legalFiles = $fields->dataFieldByName('LegalFiles');
-        if($legalFiles) {
+        if ($legalFiles) {
             $config = $legalFiles->getConfig();
-            $config->removeComponentsByType(GridFieldAddExistingAutocompleter::class);
+
+            // No link existing
+            $config->removeComponentsByType('GridFieldAddExistingAutocompleter');
+
+            // No unlink
+            $config->removeComponentsByType('GridFieldDeleteAction');
+            $config->addComponent(new GridFieldDeleteAction(false));
+
+            // Assign
+
+            /* @var $detailForm GridFieldDetailForm */
+            $detailForm = $config->getComponentByType('GridFieldDetailForm');
+            $owner      = $this->owner;
+            $base       = $this->ownerBaseClass;
+            $detailForm->setItemEditFormCallback(function(Form $form) use ($owner, $base) {
+                $fieldName = $base . 'ID';
+                $form->Fields()->push(new HiddenField($fieldName,null,$owner->ID));
+            });
+
+            // Bulk manager
+            if (class_exists('GridFieldBulkManager')) {
+                $config->addComponent($bulkManager = new GridFieldBulkManager);
+                $bulkManager->removeBulkAction('unLink');
+
+                if (LegalFile::config()->enable_storage) {
+                    $config->addComponent($bulkUpload = new GridFieldBulkUpload);
+
+                    if ($this->owner->hasMethod('getOwnFolder')) {
+                        $bulkUpload->setUfSetup('setFolderName',
+                            $this->owner->getOwnFolder());
+                    }
+                    $bulkUpload->setUfSetup('setCanAttachExisting', false);
+                }
+            }
         }
     }
 }
