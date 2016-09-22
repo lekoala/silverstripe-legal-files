@@ -38,4 +38,14 @@ class LegalFilesExtension extends DataExtension
         }
         return self::$legalFileObjects;
     }
+
+    public function updateCMSFields(\FieldList $fields)
+    {
+        /* @var $legalFiles GridField */
+        $legalFiles = $fields->dataFieldByName('LegalFiles');
+        if($legalFiles) {
+            $config = $legalFiles->getConfig();
+            $config->removeComponentsByType(GridFieldAddExistingAutocompleter::class);
+        }
+    }
 }
