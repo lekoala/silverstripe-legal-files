@@ -42,6 +42,8 @@ class LegalFile extends DataObject
         'Member' => 'Member',
     );
     private static $summary_fields = array(
+        'Member.Surname' => 'Surname',
+        'Member.FirstName' => 'First Name',
         'Type.Title' => 'Document Type',
         'ExpirationDate' => 'Expiration Date',
         'ExpiresIn' => 'Expires in',
@@ -180,6 +182,9 @@ class LegalFile extends DataObject
     }
 
     /**
+     * Look for a owner. This suppose we have only ONE owner and that
+     * the owner relation name matches the name of the class
+     *
      * @return string
      */
     public function OwnerClass()
@@ -198,6 +203,8 @@ class LegalFile extends DataObject
     }
 
     /**
+     * Return owner as a DataObject
+     * 
      * @return DataObject
      */
     public function OwnerObject()
@@ -316,7 +323,7 @@ class LegalFile extends DataObject
             $newField  = new GridField($fieldName, '', $class::get()->filter('ID',$this->OwnerID()),
                 GridFieldConfig_RecordViewer::create());
             $newField->setModelClass($class);
-            $fields->replaceField($fieldName, $newField);
+            $fields->addFieldToTab('Root.Main', $newField);
         }
 
         return $fields;

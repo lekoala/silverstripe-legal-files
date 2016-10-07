@@ -38,6 +38,11 @@ class LegalFileAdmin extends ModelAdmin
         return $context;
     }
 
+    public static function buildMemberEditLink(LegalFile $f)
+    {
+        return '/admin/legal-documents/LegalFile/EditForm/field/LegalFile/item/'.$f->ID.'/ItemEditForm/field/MemberID/item/'.$f->MemberID.'/view';
+    }
+
     public function getEditForm($id = null, $fields = null)
     {
         $form = parent::getEditForm($id, $fields);
@@ -52,17 +57,20 @@ class LegalFileAdmin extends ModelAdmin
             /* @var $cols GridFieldDataColumns */
             $cols = $gridfield->getConfig()->getComponentByType('GridFieldDataColumns');
 
-            $fields = [
-                'Member.Title' => _t('LegalFile.MEMBER_TITLE', 'Member'),
-                'Type.Title' => _t('LegalFile.TYPE_TITLE', 'Document Type'),
-                'ExpirationDate' => _t('LegalFile.EXPIRATION_DATE',
-                    'Expiration Date'),
-                'ExpiresIn' => _t('LegalFile.EXPIRES_IN', 'Expires in'),
-            ];
-
-            $singl->extend('updateGridSummaryFields', $fields);
-
-            $cols->setDisplayFields($fields);
+            $cols->setFieldFormatting(array(
+                'Member.Surname' => function($val, $item) {
+                    if (!$val) {
+                        return;
+                    }
+                    return '<a href="'.LegalFileAdmin::buildMemberEditLink($item).'">'.$val.'</a>';
+                },
+                'Member.FirstName' => function($val, $item) {
+                    if (!$val) {
+                        return;
+                    }
+                    return '<a href="'.LegalFileAdmin::buildMemberEditLink($item).'">'.$val.'</a>';
+                },
+            ));
         }
         return $form;
     }

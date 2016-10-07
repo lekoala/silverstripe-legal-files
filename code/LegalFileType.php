@@ -40,9 +40,15 @@ class LegalFileType extends DataObject
 
         $arr = LegalFilesExtension::listClassesWithLegalFile();
         if (count($arr) > 1) {
+            $labels = [];
+            foreach($arr as $class) {
+                /* @var $singl DataObject */
+                $singl = singleton($class);
+                $labels[$class] = $singl->i18n_singular_name();
+            }
             $fields->replaceField('ApplyOnlyTo',
                 $ApplyOnlyTo = new ListboxField('ApplyOnlyTo',
-                $this->fieldLabel('ApplyOnlyTo'), ArrayLib::valuekey($arr)));
+                $this->fieldLabel('ApplyOnlyTo'), $labels));
             $ApplyOnlyTo->setMultiple(true);
         } else {
             $fields->removeByName('ApplyOnlyTo');
