@@ -133,9 +133,9 @@ class LegalFile extends DataObject
         $dt2  = new DateTime();
         $diff = date_diff($dt, $dt2);
         if (!$diff->invert) {
-            return 'Expired since '.$diff->format("%d").' days';
+            return 'Expired since '.$diff->format("%a").' days';
         }
-        return 'Expires in '.$diff->format("%d").' days';
+        return 'Expires in '.$diff->format("%a").' days';
     }
 
     protected function onBeforeWrite()
