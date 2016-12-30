@@ -72,6 +72,86 @@ class LegalFilesExtension extends DataExtension
     }
 
     /**
+     * Add a new legal file. Replace any existing from the same type.
+     *
+     * @param int $typeID
+     * @param string $filename
+     * @param string $extension
+     * @return LegalFile
+     */
+    public function addNewLegalFile($typeID, $filename, $extension)
+    {
+        $lf = $this->getLegalFilesByType($typeID);
+
+        if ($lf->count() == 0) {
+            $class = $this->ownerBaseClass;
+            $rel = $class . 'ID';
+            $lf = new LegalFile;
+            $lf->TypeID = $typeID;
+            $lf->$rel = $this->owner->ID;
+            $lf->write();
+        } else {
+            $lf = $lf->first();
+
+            // Reset fields
+            $lf->Status = LegalFile::STATUS_WAITING;
+            $lf->Reminded = null;
+            $lf->Reviewed = null;
+            $lf->ExpirationDate = null;
+            $lf->Notes = null;
+
+            // Delete old file
+            if ($lf->FileID && $lf->File()->exists()) {
+                $lf->File()->delete();
+            }
+        }
+
+        $folderPath = LegalFile::config()->upload_folder;
+
+        // Create a new File and attach it to LegalFile
+        $file = new File();
+
+        $base = Director::baseFolder();
+        $parentFolder = Folder::find_or_make($folderPath);
+
+        $name = 'Doc' . $lf->ID . '.' . strtolower($extension);
+
+
+        $relativeFolderPath = $parentFolder ? $parentFolder->getRelativePath() : ASSETS_DIR . '/';
+        $relativeFilePath = $relativeFolderPath . $name;
+
+        move_uploaded_file($filename, $base . '/' . $relativeFilePath);
+
+        $file->OwnerID = Member::currentUserID();
+        $file->ParentID = $parentFolder ? $parentFolder->ID : 0;
+        // This is to prevent it from trying to rename the file
+        $file->Name = basename($relativeFilePath);
+        $file->write();
+        $file->onAfterUpload();
+
+        $lf->FileID = $file->ID;
+        $lf->write();
+
+        return $lf;
+    }
+
+    /**
+     * List of legal files for a given type
+     *
+     * @return DataList|LegalFile[]
+     */
+    public function getLegalFilesByType($type)
+    {
+        if (is_object($type)) {
+            $id = $type->ID;
+        } else {
+            $id = $type;
+        }
+
+        return $this->owner->LegalFiles()->filter('TypeID', $id);
+    }
+
+    /**
      * Send a reminder by email with a list of files
      *
      * @param array|LegalFile $files
@@ -116,6 +196,17 @@ class LegalFilesExtension extends DataExtension
         $legalFiles = $fields->dataFieldByName('LegalFiles');
         if ($legalFiles) {
             $config = $legalFiles->getConfig();
+
+            // Update summary fields
+
+            /* @var $dc GridFieldDataColumns */
+            if ($this->ownerBaseClass == 'Member') {
+                $dc = $config->getComponentByType('GridFieldDataColumns');
+                $displayFields = $dc->getDisplayFields($legalFiles);
+                unset($displayFields['Member.FirstName']);
+                unset($displayFields['Member.Surname']);
+                $dc->setDisplayFields($displayFields);
+            }
 
             // No link existing
             $config->removeComponentsByType('GridFieldAddExistingAutocompleter');

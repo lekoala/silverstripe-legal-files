@@ -3,15 +3,24 @@ en:
     DOWNLOAD_FILE: 'Download file'
     FAILED_TO_SEND_REMINDER: 'Failed to send reminder'
     FOR: for
+    FULL_STATUS: 'This document was submitted on {date} and is {status}'
     NEW_LEGAL_DOCUMENT: 'New legal document'
     PLURALNAME: 'Legal Files'
     REMINDER_SENT_SUCCESSFULLY: 'Reminder sent successfully'
     SEND_REMINDER: 'Send legal documents reminder'
     SINGULARNAME: 'Legal File'
+    STATUS_INVALID: invalid
+    STATUS_VALID: valid
+    STATUS_WAITING: waiting
     UNDEFINED_OWNER: 'Undefined owner'
   LegalFileType:
     PLURALNAME: 'Legal File Types'
     SINGULARNAME: 'Legal File Type'
+  LegalFilesForm:
+    INVALID_TYPE: 'Document {name} has an invalid type'
+    SUBMIT: 'Submit your files'
+    SUBMIT_NO_NEW: 'No new documents have been submitted'
+    SUBMIT_OK: '{count} new documents have been submitted'
   LegalFilesReminderEmail:
     GREETINGS: 'Best regards,'
     HELLO: 'Dear Customer,'

@@ -46,13 +46,116 @@ class LegalFile extends DataObject
         'Member.Surname' => 'Surname',
         'Member.FirstName' => 'First Name',
         'Type.Title' => 'Document Type',
-        'ExpirationDate' => 'Expiration Date',
         'ExpiresIn' => 'Expires in',
         'Reminded' => 'Reminded'
     );
     private static $default_sort = array(
         'ExpirationDate ASC'
     );
+    private static $better_buttons_actions = array(
+        'doValid', 'doInvalid'
+    );
+
+    public function doValid()
+    {
+        $this->Status = self::STATUS_VALID;
+        $this->write();
+
+        return _t('LegalFile.MARKED_VALID', 'Marked as valid');
+    }
+
+    public function doInvalid()
+    {
+        $this->Status = self::STATUS_INVALID;
+        $this->write();
+
+        return _t('LegalFile.MARKED_INVALID', 'Marked as invalid');
+    }
+
+    public function getBetterButtonsActions()
+    {
+        $fields = parent::getBetterButtonsActions();
+
+        if (self::config()->validation_workflow) {
+            if ($this->Status != self::STATUS_INVALID) {
+                $fields->push(new BetterButtonCustomAction('doInvalid', _t('LegalFile.MARK_INVALID', 'Is invalid')));
+            }
+            if ($this->Status != self::STATUS_VALID) {
+                $fields->push(new BetterButtonCustomAction('doInvalid', _t('LegalFile.MARK_VALID', 'Is valid')));
+            }
+        }
+
+        return $fields;
+    }
+
+    public function summaryFields()
+    {
+        $fields = parent::summaryFields();
+
+        if (self::config()->validation_workflow) {
+            $fields['TranslatedStatus'] = _t('LegalFile.SUMMARY_STATUS', 'Status');
+        }
+
+        return $fields;
+    }
+
+    /**
+     * SilverStripe message class
+     *
+     * @return string
+     */
+    public function SilverStripeClass()
+    {
+        switch ($this->Status) {
+            case self::STATUS_VALID:
+                return 'good';
+            case self::STATUS_INVALID:
+                return 'bad';
+            case self::STATUS_WAITING:
+                return 'info';
+        }
+    }
+
+    /**
+     * A user formatted date
+     * @return string
+     */
+    public function getFormattedDate()
+    {
+        $date = new Date();
+        $date->setValue($this->LastEdited);
+        return Convert::raw2xml($date->FormatFromSettings());
+    }
+
+    /**
+     * A line describing the status of this file
+     *
+     * @return string
+     */
+    public function FullStatus()
+    {
+        return _t('LegalFile.FULL_STATUS', 'This document was submitted on {date} and is {status}', [
+            'date' => $this->getFormattedDate(),
+            'status' => $this->TranslatedStatus(),
+        ]);
+    }
+
+    /**
+     * The translated status
+     *
+     * @return string
+     */
+    public function TranslatedStatus()
+    {
+        switch ($this->Status) {
+            case self::STATUS_VALID:
+                return _t('LegalFile.STATUS_VALID', 'valid');
+            case self::STATUS_INVALID:
+                return _t('LegalFile.STATUS_INVALID', 'invalid');
+            case self::STATUS_WAITING:
+                return _t('LegalFile.STATUS_WAITING', 'waiting');
+        }
+    }
 
     public function canView($member = null)
     {
@@ -132,6 +235,20 @@ class LegalFile extends DataObject
         return '';
     }
 
+    public function IsExpired()
+    {
+        if (!$this->ExpirationDate) {
+            return false;
+        }
+        $dt = new DateTime($this->ExpirationDate);
+        $dt2 = new DateTime();
+        $diff = date_diff($dt, $dt2);
+        if (!$diff->invert) {
+            return true;
+        }
+        return false;
+    }
+
     public function ExpiresIn()
     {
         if (!$this->ExpirationDate) {
@@ -149,6 +266,10 @@ class LegalFile extends DataObject
     protected function onBeforeWrite()
     {
         parent::onBeforeWrite();
+
+        if ($this->isChanged('Status', 2)) {
+            $this->Reviewed = date('Y-m-d H:i:s');
+        }
     }
 
     public function onAfterWrite()
@@ -176,17 +297,30 @@ class LegalFile extends DataObject
     }
 
     /**
+     * Return an array of types
+     *
      * @param string $forClass
      * @return array
      */
     public static function listTypes($forClass = null)
+    {
+        return self::TypesDatalist($forClass)->map()->toArray();
+    }
+
+    /**
+     * Return a list of types
+     *
+     * @param string $forClass
+     * @return DataList|LegalFileType[]
+     */
+    public static function TypesDatalist($forClass = null)
     {
         $q = LegalFileType::get();
         if ($forClass) {
             //TODO: like clause may fail
             $q = $q->where("ApplyOnlyTo IS NULL OR ApplyOnlyTo LIKE '%$forClass%'");
         }
-        return $q->map()->toArray();
+        return $q;
     }
 
     /**
@@ -269,7 +403,6 @@ class LegalFile extends DataObject
         }
 
         if (self::config()->enable_storage) {
-            // Set upload path
             /* @var $File UploadField */
             $File = $fields->dataFieldByName('File');
             $File->setCanAttachExisting(false);

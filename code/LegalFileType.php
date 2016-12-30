@@ -35,6 +35,12 @@ class LegalFileType extends DataObject
         'Title ASC'
     );
 
+    public function getName()
+    {
+        $filter = new FileNameFilter;
+        return $filter->filter($this->Title);
+    }
+
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();

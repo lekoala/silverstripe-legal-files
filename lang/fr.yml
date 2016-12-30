@@ -1,17 +1,26 @@
 fr:
   LegalFile:
-    DOWNLOAD_FILE: 'Download file'
-    FAILED_TO_SEND_REMINDER: 'Failed to send reminder'
-    FOR: for
-    NEW_LEGAL_DOCUMENT: 'New legal document'
-    PLURALNAME: 'Legal Files'
-    REMINDER_SENT_SUCCESSFULLY: 'Reminder sent successfully'
+    DOWNLOAD_FILE: 'Télécharger le fichier'
+    FAILED_TO_SEND_REMINDER: 'Echec de l''envoi'
+    FOR: pour
+    FULL_STATUS: 'Cette pièce a été envoyée le {date} et est {status}'
+    NEW_LEGAL_DOCUMENT: 'Nouvelle pièce légale'
+    PLURALNAME: 'Pièces légales'
+    REMINDER_SENT_SUCCESSFULLY: 'Rappel envoyé avec succès'
     SEND_REMINDER: 'Envoyer un rappel des pièces légales'
-    SINGULARNAME: 'Legal File'
-    UNDEFINED_OWNER: 'Undefined owner'
+    SINGULARNAME: 'Pièce légale'
+    STATUS_INVALID: invalide
+    STATUS_VALID: valide
+    STATUS_WAITING: 'en attente'
+    UNDEFINED_OWNER: 'Propriétaire inconnu'
   LegalFileType:
-    PLURALNAME: 'Legal File Types'
-    SINGULARNAME: 'Legal File Type'
+    PLURALNAME: 'Types de document'
+    SINGULARNAME: 'Type de document'
+  LegalFilesForm:
+    INVALID_TYPE: 'Document {name} has an invalid type'
+    SUBMIT: 'Soumettre vos pièces'
+    SUBMIT_NO_NEW: 'Aucune nouvelle pièce n''a été envoyée'
+    SUBMIT_OK: '{count} nouvelles pièces ont été envoyées'
   LegalFilesReminderEmail:
     GREETINGS: 'Salutations distinguées,'
     HELLO: 'Cher client,'

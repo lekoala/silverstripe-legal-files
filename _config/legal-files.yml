@@ -15,3 +15,10 @@ LegalFile:
 Director:
   rules:
     '_legalfiles': 'LegalFilesController'
+---
+Only:
+  classexists: 'Fluent'
+---
+LegalFileType:
+  extensions:
+    [FluentExtension]
