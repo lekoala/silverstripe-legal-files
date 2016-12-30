@@ -7,13 +7,14 @@
  */
 class LegalFileAdmin extends ModelAdmin
 {
+
     private static $managed_models = array(
         'LegalFile', 'LegalFileType'
     );
-    private static $url_segment    = 'legal-documents';
-    private static $menu_title     = 'Legal Documents';
-    private static $awesome_icon   = "fa-file-text";
-    public $showImportForm         = false;
+    private static $url_segment = 'legal-documents';
+    private static $menu_title = 'Legal Documents';
+    private static $awesome_icon = "fa-file-text";
+    public $showImportForm = false;
 
     public function init()
     {
@@ -31,7 +32,7 @@ class LegalFileAdmin extends ModelAdmin
     public function getSearchContext()
     {
         $context = parent::getSearchContext();
-        $fields  = $context->getFields();
+        $fields = $context->getFields();
 
         $singl = singleton($this->modelClass);
 
@@ -40,7 +41,7 @@ class LegalFileAdmin extends ModelAdmin
 
     public static function buildMemberEditLink(LegalFile $f)
     {
-        return '/admin/legal-documents/LegalFile/EditForm/field/LegalFile/item/'.$f->ID.'/ItemEditForm/field/MemberID/item/'.$f->MemberID.'/view';
+        return '/admin/legal-documents/LegalFile/EditForm/field/LegalFile/item/' . $f->ID . '/ItemEditForm/field/MemberID/item/' . $f->MemberID . '/view';
     }
 
     public function getEditForm($id = null, $fields = null)
@@ -51,7 +52,7 @@ class LegalFileAdmin extends ModelAdmin
 
         /* @var $gridfield GridField */
         $gridfield = $form->Fields()->dataFieldByName($this->modelClass);
-        $config    = $gridfield->getConfig();
+        $config = $gridfield->getConfig();
 
         if ($this->modelClass == 'LegalFile') {
             /* @var $cols GridFieldDataColumns */
@@ -62,13 +63,13 @@ class LegalFileAdmin extends ModelAdmin
                     if (!$val) {
                         return;
                     }
-                    return '<a href="'.LegalFileAdmin::buildMemberEditLink($item).'">'.$val.'</a>';
+                    return '<a href="' . LegalFileAdmin::buildMemberEditLink($item) . '">' . $val . '</a>';
                 },
                 'Member.FirstName' => function($val, $item) {
                     if (!$val) {
                         return;
                     }
-                    return '<a href="'.LegalFileAdmin::buildMemberEditLink($item).'">'.$val.'</a>';
+                    return '<a href="' . LegalFileAdmin::buildMemberEditLink($item) . '">' . $val . '</a>';
                 },
             ));
         }
@@ -82,7 +83,7 @@ class LegalFileAdmin extends ModelAdmin
      */
     public static function getLegalFilesPath()
     {
-        return ASSETS_PATH.'/'.self::getLegalFilesDir();
+        return ASSETS_PATH . '/' . self::getLegalFilesDir();
     }
 
     /**
@@ -111,14 +112,13 @@ class LegalFileAdmin extends ModelAdmin
     public static function initLegalFilesFolder()
     {
         $folder = self::getBaseLegalFilesFolder();
-        $path   = $folder->getFullPath();
+        $path = $folder->getFullPath();
 
         // Restrict access to the storage folder
-        if (!is_file($path.DIRECTORY_SEPARATOR.'.htaccess')) {
-            $ressourcesPath = Director::baseFolder().DIRECTORY_SEPARATOR.LEGALFILES_DIR.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR;
+        if (!is_file($path . DIRECTORY_SEPARATOR . '.htaccess')) {
+            $ressourcesPath = Director::baseFolder() . DIRECTORY_SEPARATOR . LEGALFILES_DIR . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR;
 
-            copy($ressourcesPath.'.htaccess',
-                $path.DIRECTORY_SEPARATOR.'.htaccess');
+            copy($ressourcesPath . '.htaccess', $path . DIRECTORY_SEPARATOR . '.htaccess');
         }
     }
 }

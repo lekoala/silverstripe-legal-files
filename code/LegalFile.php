@@ -25,18 +25,19 @@
  */
 class LegalFile extends DataObject
 {
-    const STATUS_VALID   = 'Valid';
+
+    const STATUS_VALID = 'Valid';
     const STATUS_INVALID = 'Invalid';
     const STATUS_WAITING = 'Waiting';
 
-    private static $db             = array(
+    private static $db = array(
         'ExpirationDate' => 'Date',
         'Status' => "Enum('Waiting,Valid,Invalid','Waiting')",
         'Notes' => 'Text',
         'Reviewed' => 'SS_Datetime',
         'Reminded' => 'SS_Datetime',
     );
-    private static $has_one        = array(
+    private static $has_one = array(
         'Type' => 'LegalFileType',
         'File' => 'File',
         'Member' => 'Member',
@@ -49,7 +50,7 @@ class LegalFile extends DataObject
         'ExpiresIn' => 'Expires in',
         'Reminded' => 'Reminded'
     );
-    private static $default_sort   = array(
+    private static $default_sort = array(
         'ExpirationDate ASC'
     );
 
@@ -78,9 +79,16 @@ class LegalFile extends DataObject
         if (!$this->TypeID) {
             return _t('LegalFile.NEW_LEGAL_DOCUMENT', 'New legal document');
         }
-        $type  = $this->Type()->getTitle();
-        $owner = $this->OwnerObject()->getTitle();
-        return $type.' '._t('LegalFile.FOR', 'for').' '.$owner;
+        $owner = $this->OwnerObject();
+
+        $type = $this->Type()->getTitle();
+        if ($owner) {
+            $owner = $owner->getTitle();
+        } else {
+            $owner = _t('LegalFile.UNDEFINED_OWNER', 'Undefined owner');
+        }
+
+        return $type . ' ' . _t('LegalFile.FOR', 'for') . ' ' . $owner;
     }
 
     public function getRowClass()
@@ -96,11 +104,11 @@ class LegalFile extends DataObject
             }
             return '';
         }
-        $dt        = new DateTime($this->ExpirationDate);
-        $dt2       = new DateTime();
-        $diff      = date_diff($dt, $dt2);
+        $dt = new DateTime($this->ExpirationDate);
+        $dt2 = new DateTime();
+        $diff = date_diff($dt, $dt2);
         $diff_days = $diff->format("%a");
-        $days      = self::config()->days_before_reminder;
+        $days = self::config()->days_before_reminder;
 
         // We have a negative value, it's not valid!
         if (!$diff->invert) {
@@ -129,13 +137,13 @@ class LegalFile extends DataObject
         if (!$this->ExpirationDate) {
             return 'No expiration date';
         }
-        $dt   = new DateTime($this->ExpirationDate);
-        $dt2  = new DateTime();
+        $dt = new DateTime($this->ExpirationDate);
+        $dt2 = new DateTime();
         $diff = date_diff($dt, $dt2);
         if (!$diff->invert) {
-            return 'Expired since '.$diff->format("%a").' days';
+            return 'Expired since ' . $diff->format("%a") . ' days';
         }
-        return 'Expires in '.$diff->format("%a").' days';
+        return 'Expires in ' . $diff->format("%a") . ' days';
     }
 
     protected function onBeforeWrite()
@@ -148,9 +156,9 @@ class LegalFile extends DataObject
         parent::onAfterWrite();
 
         if ($this->FileID) {
-            $f   = $this->File();
+            $f = $this->File();
             $ext = $f->getExtension();
-            $f->setName('Doc'.$this->ID.'.'.$ext);
+            $f->setName('Doc' . $this->ID . '.' . $ext);
             $f->write();
         }
     }
@@ -195,7 +203,7 @@ class LegalFile extends DataObject
             if (!in_array($cl, $classes)) {
                 continue;
             }
-            $f = $rel.'ID';
+            $f = $rel . 'ID';
             if ($this->$f) {
                 return $cl;
             }
@@ -204,7 +212,7 @@ class LegalFile extends DataObject
 
     /**
      * Return owner as a DataObject
-     * 
+     *
      * @return DataObject
      */
     public function OwnerObject()
@@ -215,7 +223,7 @@ class LegalFile extends DataObject
             if (!in_array($cl, $classes)) {
                 continue;
             }
-            $f = $rel.'ID';
+            $f = $rel . 'ID';
             if ($this->$f) {
                 return $this->$rel();
             }
@@ -233,7 +241,7 @@ class LegalFile extends DataObject
             if (!in_array($cl, $classes)) {
                 continue;
             }
-            $f = $rel.'ID';
+            $f = $rel . 'ID';
             if ($this->$f) {
                 return $this->$f;
             }
@@ -274,18 +282,15 @@ class LegalFile extends DataObject
 
                 // Only show if previewable
                 if (in_array($file->getExtension(), array('jpg', 'png', 'pdf'))) {
-                    $previewLink = $file->Link().'?inline=true';
+                    $previewLink = $file->Link() . '?inline=true';
 
-                    $iframe = new LiteralField('iframe',
-                        '<iframe src="'.$previewLink.'" style="width:100%;background:#fff;min-height:100%;min-height:500px;vertical-align:top"></iframe>');
+                    $iframe = new LiteralField('iframe', '<iframe src="' . $previewLink . '" style="width:100%;background:#fff;min-height:100%;min-height:500px;vertical-align:top"></iframe>');
 
                     $fields->addFieldToTab('Root.Preview', $iframe);
                 }
 
                 // Downloadable button
-                $fields->insertAfter(new LiteralField('download_link',
-                    '<a class="ss-ui-button" href="'.$file->Link().'">'._t('LegalFile.DOWNLOAD_FILE',
-                        'Download file').'</a>'), 'File');
+                $fields->insertAfter(new LiteralField('download_link', '<a class="ss-ui-button" href="' . $file->Link() . '">' . _t('LegalFile.DOWNLOAD_FILE', 'Download file') . '</a>'), 'File');
             }
         } else {
             $fields->removeByName('File');
@@ -295,13 +300,12 @@ class LegalFile extends DataObject
 
         $fields->makeFieldReadonly('Reminded');
 
-        // Only display valid types
+        // Only display valid types for given class
         $types = self::listTypes($ownerClass);
         $fields->removeByName('TypeID');
         if (!empty($types)) {
             $fields->insertBefore(
-                new DropdownField('TypeID', $this->fieldLabel('Type'), $types),
-                'ExpirationDate');
+                new DropdownField('TypeID', $this->fieldLabel('Type'), $types), 'ExpirationDate');
         }
 
         // If we have a type, it might change some fields
@@ -314,16 +318,35 @@ class LegalFile extends DataObject
         // Filter fields that are not needed, we can only attach to one record
         $classes = LegalFilesExtension::listClassesWithLegalFile();
         foreach ($classes as $class) {
-            if ($class != $ownerClass) {
-                $fields->removeByName($class.'ID');
+            if ($ownerClass && $class != $ownerClass) {
+                $fields->removeByName($class . 'ID');
                 continue;
             }
 
-            $fieldName = $class.'ID';
-            $newField  = new GridField($fieldName, '', $class::get()->filter('ID',$this->OwnerID()),
-                GridFieldConfig_RecordViewer::create());
-            $newField->setModelClass($class);
-            $fields->addFieldToTab('Root.Main', $newField);
+            $newField = null;
+            $fieldName = $class . 'ID';
+
+            if ($ownerClass) {
+                $gfc = GridFieldConfig_RecordViewer::create();
+                $gfc->removeComponentsByType('GridFieldSortableHeader');
+                $gfc->removeComponentsByType('GridFieldFilterHeader');
+                $gfc->removeComponentsByType('GridFieldPaginator');
+                $gfc->removeComponentsByType('GridFieldPageCount');
+                $gfc->removeComponentsByType('GridFieldToolbarHeader');
+
+                $newField = new GridField($fieldName, '', $class::get()->filter('ID', $this->OwnerID()), $gfc);
+                $newField->setModelClass($class);
+            } else {
+                if (class_exists('HasOnePickerField')) {
+                    $newField = new HasOnePickerField($this, $fieldName, '', $this->$class());
+                    $gfc = $newField->getConfig();
+                    $gfc->removeComponentsByType('GridFieldToolbarHeader');
+                }
+            }
+
+            if ($newField) {
+                $fields->addFieldToTab('Root.Main', $newField);
+            }
         }
 
         return $fields;

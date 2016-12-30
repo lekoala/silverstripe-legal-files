@@ -29,10 +29,9 @@ class RemindLegalFilesTask implements CronTask
             return 'No days before reminder have been set';
         }
         $files = LegalFile::get()
-            ->filter('ExpirationDate:LessThan',
-                date('Y-m-d', strtotime('+'.$days.' days')))
+            ->filter('ExpirationDate:LessThan', date('Y-m-d', strtotime('+' . $days . ' days')))
             ->exclude('MemberID', 0)
-            ->filter('Reminded', null)
+            ->where('Reminded IS NULL') // In 3.1 filter = null is not working
         ;
 
         if ($files->count() == 0) {
@@ -47,32 +46,15 @@ class RemindLegalFilesTask implements CronTask
             $fileByMember = $fileByMember->toMap();
 
             $MemberID = $fileByMember['MemberID'];
-            $files    = $fileByMember['Children'];
+            $files = $fileByMember['Children'];
 
             $Member = Member::get()->byID($MemberID);
-
-            $email = new Email();
-            $email->setSubject(_t('LegalFiles.EMAIL_SUBJECT',
-                    "Legal documents are about to be expired"));
-
-            $viewer = new SSViewer('LegalFilesReminder');
-            $result = $viewer->process($Member, array('Files' => $files));
-            $body   = (string) $result;
-
-            $email->setBody($body);
-            $email->setTo($Member->Email);
-
-            $sent = $email->send();
+            $sent = $member->sendLegalFilesReminder($files);
 
             if ($sent) {
-                foreach ($files as $file) {
-                    $file->Reminded = date('Y-m-d H:i:s');
-                    $file->write();
-                }
-
-                $res[] = 'Reminded Member '.$MemberID;
+                $res[] = 'Reminded Member ' . $MemberID;
             } else {
-                $res[] = 'Failed to send email to '.$MemberID;
+                $res[] = 'Failed to send email to ' . $MemberID;
             }
         }
 

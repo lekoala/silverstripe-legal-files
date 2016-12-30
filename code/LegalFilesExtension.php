@@ -9,16 +9,28 @@
  */
 class LegalFilesExtension extends DataExtension
 {
+
     private static $has_many = array(
         'LegalFiles' => 'LegalFile',
     );
     protected static $legalFileObjects;
+    private static $better_buttons_actions = array(
+        'doSendLegalFilesReminder'
+    );
+
+    public function updateBetterButtonsActions(FieldList $actions)
+    {
+        $files = $this->getAboutToExpireLegalFiles()->where('Reminded IS NULL');
+        if ($files->count()) {
+            $actions->push(new BetterButtonCustomAction('doSendLegalFilesReminder', _t('LegalFile.SEND_REMINDER', 'Send legal documents reminder')));
+        }
+    }
 
     public static function listClassesWithLegalFile()
     {
         if (self::$legalFileObjects === null) {
             self::$legalFileObjects = array();
-            $dataobjects            = ClassInfo::subclassesFor('DataObject');
+            $dataobjects = ClassInfo::subclassesFor('DataObject');
             foreach ($dataobjects as $dataobject) {
                 $singl = singleton($dataobject);
 
@@ -39,6 +51,65 @@ class LegalFilesExtension extends DataExtension
         return self::$legalFileObjects;
     }
 
+    public function doSendLegalFilesReminder()
+    {
+        $res = $this->sendLegalFilesReminder($this->getAboutToExpireLegalFiles()->where('Reminded IS NULL'));
+
+        if ($res) {
+            return _t('LegalFile.REMINDER_SENT_SUCCESSFULLY', 'Reminder sent successfully');
+        }
+        return _t('LegalFile.FAILED_TO_SEND_REMINDER', 'Failed to send reminder');
+    }
+
+    /**
+     * @return DataList|LegalFile[]
+     */
+    public function getAboutToExpireLegalFiles()
+    {
+        $days = LegalFile::config()->days_before_reminder;
+        return $this->owner->LegalFiles()
+                ->filter('ExpirationDate:LessThan', date('Y-m-d', strtotime('+' . $days . ' days')));
+    }
+
+    /**
+     * Send a reminder by email with a list of files
+     *
+     * @param array|LegalFile $files
+     * @return array|boolean
+     */
+    public function sendLegalFilesReminder($files)
+    {
+        $email = new Email();
+        $email->setSubject(_t('LegalFilesReminderEmail.SUBJECT', "Legal documents are about to be expired"));
+
+        // Create a list of files
+        $filesHTML = '';
+        foreach ($files as $file) {
+            $filesHTML = '- ' . $file->Type()->getTitle() . '<br/>';
+        }
+
+        if (class_exists('EmailTemplate') && $email = EmailTemplate::getEmailByCode('legal-files-reminder')) {
+
+        } else {
+            $viewer = new SSViewer('email/LegalFilesReminderEmail');
+            $result = $viewer->process($Member, array('Files' => $filesHTML));
+            $body = (string) $result;
+            $email->setBody($body);
+        }
+
+        $email->setTo($this->owner->Email);
+
+        $res = $email->send();
+
+        if ($res) {
+            foreach ($files as $file) {
+                $file->Reminded = date('Y-m-d H:i:s');
+                $file->write();
+            }
+        }
+        return $res;
+    }
+
     public function updateCMSFields(\FieldList $fields)
     {
         /* @var $legalFiles GridField */
@@ -57,11 +128,11 @@ class LegalFilesExtension extends DataExtension
 
             /* @var $detailForm GridFieldDetailForm */
             $detailForm = $config->getComponentByType('GridFieldDetailForm');
-            $owner      = $this->owner;
-            $base       = $this->ownerBaseClass;
+            $owner = $this->owner;
+            $base = $this->ownerBaseClass;
             $detailForm->setItemEditFormCallback(function(Form $form) use ($owner, $base) {
                 $fieldName = $base . 'ID';
-                $form->Fields()->push(new HiddenField($fieldName,null,$owner->ID));
+                $form->Fields()->push(new HiddenField($fieldName, null, $owner->ID));
             });
 
             // Bulk manager
@@ -73,8 +144,7 @@ class LegalFilesExtension extends DataExtension
                     $config->addComponent($bulkUpload = new GridFieldBulkUpload);
 
                     if ($this->owner->hasMethod('getOwnFolder')) {
-                        $bulkUpload->setUfSetup('setFolderName',
-                            $this->owner->getOwnFolder());
+                        $bulkUpload->setUfSetup('setFolderName', $this->owner->getOwnFolder());
                     }
                     $bulkUpload->setUfSetup('setCanAttachExisting', false);
                 }

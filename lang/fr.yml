@@ -1,0 +1,20 @@
+fr:
+  LegalFile:
+    DOWNLOAD_FILE: 'Download file'
+    FAILED_TO_SEND_REMINDER: 'Failed to send reminder'
+    FOR: for
+    NEW_LEGAL_DOCUMENT: 'New legal document'
+    PLURALNAME: 'Legal Files'
+    REMINDER_SENT_SUCCESSFULLY: 'Reminder sent successfully'
+    SEND_REMINDER: 'Envoyer un rappel des pièces légales'
+    SINGULARNAME: 'Legal File'
+    UNDEFINED_OWNER: 'Undefined owner'
+  LegalFileType:
+    PLURALNAME: 'Legal File Types'
+    SINGULARNAME: 'Legal File Type'
+  LegalFilesReminderEmail:
+    GREETINGS: 'Salutations distinguées,'
+    HELLO: 'Cher client,'
+    SUBJECT: 'Vos pièces légales sont sur le point d''expirer'
+    TEXT1: 'Veuillez noter que les pièces légales suivantes sont sur le point d''expirer:'
+    TEXT2: 'Veuillez nous envoyer une version à jour dès que possible.'

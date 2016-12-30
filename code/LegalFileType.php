@@ -13,24 +13,25 @@
  */
 class LegalFileType extends DataObject
 {
-    private static $db             = array(
+
+    private static $db = array(
         'Title' => "Varchar(255)",
         'Description' => "Varchar(255)",
         'ApplyOnlyTo' => "Varchar(255)",
         'CannotExpire' => 'Boolean',
         'Mandatory' => 'Boolean',
     );
-    private static $has_many       = array(
+    private static $has_many = array(
         'Files' => 'LegalFile',
     );
     private static $summary_fields = array(
         'Title',
     );
-    private static $field_labels   = array(
+    private static $field_labels = array(
         'CannotExpire' => "Cannot expire",
         'ApplyOnlyTo' => "Applies only to",
     );
-    private static $default_sort   = array(
+    private static $default_sort = array(
         'Title ASC'
     );
 
@@ -41,14 +42,12 @@ class LegalFileType extends DataObject
         $arr = LegalFilesExtension::listClassesWithLegalFile();
         if (count($arr) > 1) {
             $labels = [];
-            foreach($arr as $class) {
+            foreach ($arr as $class) {
                 /* @var $singl DataObject */
                 $singl = singleton($class);
                 $labels[$class] = $singl->i18n_singular_name();
             }
-            $fields->replaceField('ApplyOnlyTo',
-                $ApplyOnlyTo = new ListboxField('ApplyOnlyTo',
-                $this->fieldLabel('ApplyOnlyTo'), $labels));
+            $fields->replaceField('ApplyOnlyTo', $ApplyOnlyTo = new ListboxField('ApplyOnlyTo', $this->fieldLabel('ApplyOnlyTo'), $labels));
             $ApplyOnlyTo->setMultiple(true);
         } else {
             $fields->removeByName('ApplyOnlyTo');

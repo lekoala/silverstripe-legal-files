@@ -6,6 +6,7 @@
  */
 class LegalFilesController extends Controller
 {
+
     public static $allowed_actions = array();
 
     public function init()
@@ -26,7 +27,7 @@ class LegalFilesController extends Controller
         $memberID = Member::currentUserID();
 
         $filePath = $this->request->getVar('file');
-        $inline   = $this->request->getVar('inline');
+        $inline = $this->request->getVar('inline');
 
         $fileAssetPath = substr($filePath, stripos($filePath, 'assets'));
 
@@ -41,16 +42,16 @@ class LegalFilesController extends Controller
         }
 
         $fullPath = $fileObj->getFullPath();
-        $name     = $fileObj->Name;
+        $name = $fileObj->Name;
 
         $disposition = 'attachment'; // or inline
-        $mimeType    = 'application/octet-stream';
+        $mimeType = 'application/octet-stream';
         if ($inline) {
             $disposition = 'inline';
-            $mimeType    = HTTP::get_mime_type($fullPath);
+            $mimeType = HTTP::get_mime_type($fullPath);
         }
 
-        header('Content-Type: '.$mimeType);
+        header('Content-Type: ' . $mimeType);
         header("Content-Transfer-Encoding: Binary");
         header("Content-Disposition: $disposition; filename=\"$name\"");
         header("Pragma: public");
