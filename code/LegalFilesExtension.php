@@ -20,6 +20,10 @@ class LegalFilesExtension extends DataExtension
 
     public function updateBetterButtonsActions(FieldList $actions)
     {
+        // If the owner is not created, no need to check anything
+        if (!$this->owner->ID) {
+            return;
+        }
         $files = $this->getAboutToExpireLegalFiles()->where('Reminded IS NULL');
         if ($files->count()) {
             $actions->push(new BetterButtonCustomAction('doSendLegalFilesReminder', _t('LegalFile.SEND_REMINDER', 'Send legal documents reminder')));
