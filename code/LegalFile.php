@@ -41,6 +41,7 @@ class LegalFile extends DataObject
         'Type' => 'LegalFileType',
         'File' => 'File',
         'Member' => 'Member',
+        'ReviewMember' => 'Member',
     );
     private static $summary_fields = array(
         'Member.Surname' => 'Surname',
@@ -53,7 +54,7 @@ class LegalFile extends DataObject
         'ExpirationDate ASC'
     );
     private static $better_buttons_actions = array(
-        'doValid', 'doInvalid'
+        'doValid', 'doInvalid', 'doWaiting'
     );
 
     public function doValid()
@@ -69,7 +70,22 @@ class LegalFile extends DataObject
         $this->Status = self::STATUS_INVALID;
         $this->write();
 
+        $template = 'LegalFilesDocumentInvalidEmail';
+        $emailTitle = _t('LegalFilesDocumentInvalidEmail.SUBJECT', "A legal document has been marked has invalid");
+        $email = LegalFileEmail::getEmail($this, $emailTitle, $template);
+        if ($email->To()) {
+            $email->send();
+        }
+
         return _t('LegalFile.MARKED_INVALID', 'Marked as invalid');
+    }
+
+    public function doWaiting()
+    {
+        $this->Status = self::STATUS_WAITING;
+        $this->write();
+
+        return _t('LegalFile.STATUS_WAITING', 'Marked as waiting');
     }
 
     public function getBetterButtonsActions()
@@ -82,6 +98,9 @@ class LegalFile extends DataObject
             }
             if ($this->Status != self::STATUS_VALID) {
                 $fields->push(new BetterButtonCustomAction('doInvalid', _t('LegalFile.MARK_VALID', 'Is valid')));
+            }
+            if ($this->Status != self::STATUS_WAITING) {
+                $fields->push(new BetterButtonCustomAction('doWaiting', _t('LegalFile.MARK_WAITING', 'Is waiting')));
             }
         }
 
@@ -134,7 +153,8 @@ class LegalFile extends DataObject
      */
     public function FullStatus()
     {
-        return _t('LegalFile.FULL_STATUS', 'This document was submitted on {date} and is {status}', [
+        return _t('LegalFile.FULL_STATUS', '{type}: submitted on {date} and is {status}', [
+            'type' => $this->Type()->Title,
             'date' => $this->getFormattedDate(),
             'status' => $this->TranslatedStatus(),
         ]);
@@ -269,6 +289,7 @@ class LegalFile extends DataObject
 
         if ($this->isChanged('Status', 2)) {
             $this->Reviewed = date('Y-m-d H:i:s');
+            $this->ReviewMemberID = Member::currentUserID();
         }
     }
 
@@ -276,11 +297,15 @@ class LegalFile extends DataObject
     {
         parent::onAfterWrite();
 
-        if ($this->FileID) {
+        if ($this->FileID && $this->File()->exists()) {
+            /* @var $f File */
             $f = $this->File();
             $ext = $f->getExtension();
-            $f->setName('Doc' . $this->ID . '.' . $ext);
-            $f->write();
+            $newName = 'Doc' . $this->ID . '.' . $ext;
+            if ($newName != $f->getField('Name')) {
+                $f->setName($newName);
+                $f->write();
+            }
         }
     }
 
@@ -388,6 +413,8 @@ class LegalFile extends DataObject
 
         $ownerClass = $this->OwnerClass();
 
+        $fields->removeByName('ReviewedMemberID');
+
         // Validation workflow
         if (!self::config()->validation_workflow) {
             $fields->removeByName('Status');
@@ -398,8 +425,13 @@ class LegalFile extends DataObject
             if (!$this->FileID) {
                 $fields->removeByName('Reviewed');
             } else {
-                $fields->makeFieldReadonly('Reviewed');
+                $fields->replaceField('Reviewed', new ReadonlyField('ReviewedBy', $this->fieldLabel('Reviewed'), _t('LegalFile.REVIEWED_BY', "Reviewed at {date} by {member}", [
+                        'date' => $this->Reviewed,
+                        'member' => $this->ReviewMemberID ? $this->ReviewMember()->getTitle() : 'unknown'
+                ])));
             }
+
+            $fields->replaceField('Status', new ReadonlyField('TranslatedStatusText', $this->fieldLabel('Status'), $this->TranslatedStatus()));
         }
 
         if (self::config()->enable_storage) {

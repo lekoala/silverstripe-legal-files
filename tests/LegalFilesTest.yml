@@ -1,0 +1,53 @@
+Folder:
+  legalfiles_folder:
+    Name: LegalFiles
+File:
+  valid_doc:
+    Name: Doc1.png
+    Filename: assets/LegalFiles/Doc1.png
+  invalid_doc:
+    Name: Doc2.png
+    Filename: assets/LegalFiles/Doc2.png
+  expired_doc:
+    Name: Doc3.png
+    Filename: assets/LegalFiles/Doc3.png
+  waiting_doc:
+    Name: Doc4.png
+    Filename: assets/LegalFiles/Doc4.png
+Member:
+  memberWithDocuments:
+    Email: documents@example.com
+  memberWithoutDocuments:
+    Email: without@example.com
+  memberWithExpiredDocuments:
+    Email: expired@example.com
+LegalFileType:
+  id:
+    Title: 'ID Card'
+  passport:
+    Title: 'Passport'
+  driving_licence:
+    Title: 'Driving Licence'
+LegalFile:
+  valid_lf:
+    Status: Valid
+    ExpirationDate: 2050-01-01
+    Type: =>LegalFileType.id
+    File: =>File.valid_doc
+    Member: =>Member.memberWithDocuments
+  invalid_lf:
+    Status: Invalid
+    Type: =>LegalFileType.passport
+    File: =>File.invalid_doc
+    Member: =>Member.memberWithDocuments
+  expired_lf:
+    Status: Valid
+    Type: =>LegalFileType.passport
+    ExpirationDate: 2000-01-01
+    File: =>File.expired_doc
+    Member: =>Member.memberWithExpiredDocuments
+  waiting_lf:
+    Status: Waiting
+    Type: =>LegalFileType.driving_licence
+    File: =>File.waiting_doc
+    Member: =>Member.memberWithExpiredDocuments

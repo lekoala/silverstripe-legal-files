@@ -3,27 +3,50 @@ en:
     DOWNLOAD_FILE: 'Download file'
     FAILED_TO_SEND_REMINDER: 'Failed to send reminder'
     FOR: for
-    FULL_STATUS: 'This document was submitted on {date} and is {status}'
+    FULL_STATUS: '{type}: submitted on {date} and is {status}'
+    MARKED_INVALID: 'Marked as invalid'
+    MARKED_VALID: 'Marked as valid'
+    MARK_INVALID: 'Is invalid'
+    MARK_VALID: 'Is valid'
+    MARK_WAITING: 'Is waiting'
     NEW_LEGAL_DOCUMENT: 'New legal document'
     PLURALNAME: 'Legal Files'
     REMINDER_SENT_SUCCESSFULLY: 'Reminder sent successfully'
+    REVIEWED_BY: 'Reviewed at {date} by {member}'
     SEND_REMINDER: 'Send legal documents reminder'
     SINGULARNAME: 'Legal File'
     STATUS_INVALID: invalid
     STATUS_VALID: valid
     STATUS_WAITING: waiting
+    SUMMARY_STATUS: Status
     UNDEFINED_OWNER: 'Undefined owner'
   LegalFileType:
     PLURALNAME: 'Legal File Types'
     SINGULARNAME: 'Legal File Type'
+  LegalFilesDocumentInvalidEmail:
+    SUBJECT: 'A legal document has been marked has invalid'
+    TEXT1: 'The following document has been marked has invalid'
+    TEXT2: 'Please send us another version as soon as possible.'
+  LegalFilesDocumentReplacedEmail:
+    SUBJECT: 'A legal document has been replaced'
+    TEXT1: 'A legal document has been replaced and needs reviewing'
+  LegalFilesEmail:
+    GREETINGS: 'Best regards,'
+    HELLO: 'Dear Customer,'
+  LegalFilesEmailAdmin:
+    GREETINGS: 'Best regards,'
+    HELLO: 'Dear website administrator,'
   LegalFilesForm:
     INVALID_TYPE: 'Document {name} has an invalid type'
     SUBMIT: 'Submit your files'
     SUBMIT_NO_NEW: 'No new documents have been submitted'
     SUBMIT_OK: '{count} new documents have been submitted'
+  LegalFilesNewDocumentEmail:
+    SUBJECT: 'A new legal document has been uploaded'
+    TEXT1: 'A new legal document has been uploaded and needs reviewing'
   LegalFilesReminderEmail:
-    GREETINGS: 'Best regards,'
-    HELLO: 'Dear Customer,'
     SUBJECT: 'Legal documents are about to be expired'
     TEXT1: 'Please note that the following legally-required document(s) are about to be expired:'
     TEXT2: 'Please send us an updated version as soon as possible.'
+    GREETINGS: 'Best regards,'
+    HELLO: 'Dear Customer,'

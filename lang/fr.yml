@@ -3,27 +3,50 @@ fr:
     DOWNLOAD_FILE: 'Télécharger le fichier'
     FAILED_TO_SEND_REMINDER: 'Echec de l''envoi'
     FOR: pour
-    FULL_STATUS: 'Cette pièce a été envoyée le {date} et est {status}'
+    FULL_STATUS: '{type}: envoyée le {date} et est {status}'
+    MARKED_INVALID: 'Marquée comme invalide'
+    MARKED_VALID: 'Marquée comme valide'
+    MARK_INVALID: 'Est invalide'
+    MARK_VALID: 'Est valide'
+    MARK_WAITING: 'Est en attente'
     NEW_LEGAL_DOCUMENT: 'Nouvelle pièce légale'
     PLURALNAME: 'Pièces légales'
     REMINDER_SENT_SUCCESSFULLY: 'Rappel envoyé avec succès'
+    REVIEWED_BY: 'Mis à jour le {date} par {member}'
     SEND_REMINDER: 'Envoyer un rappel des pièces légales'
     SINGULARNAME: 'Pièce légale'
     STATUS_INVALID: invalide
     STATUS_VALID: valide
     STATUS_WAITING: 'en attente'
+    SUMMARY_STATUS: Status
     UNDEFINED_OWNER: 'Propriétaire inconnu'
   LegalFileType:
     PLURALNAME: 'Types de document'
     SINGULARNAME: 'Type de document'
+  LegalFilesDocumentInvalidEmail:
+    SUBJECT: 'Un document a été marquée comme invalide'
+    TEXT1: 'Le document suivant a été marqué comme invalide'
+    TEXT2: 'Veuillez nous envoyer une version à jour dès que possible.'
+  LegalFilesDocumentReplacedEmail:
+    SUBJECT: 'Une pièce légale a été remplacée'
+    TEXT1: 'Une pièce légale a été remplacée et doit être passée en revue'
+  LegalFilesEmail:
+    GREETINGS: 'Cordialement,'
+    HELLO: 'Cher client,'
+  LegalFilesEmailAdmin:
+    GREETINGS: 'Cordialement,'
+    HELLO: 'Cher administrateur,'
   LegalFilesForm:
-    INVALID_TYPE: 'Document {name} has an invalid type'
+    INVALID_TYPE: 'Le document {name} a un type invalide'
     SUBMIT: 'Soumettre vos pièces'
     SUBMIT_NO_NEW: 'Aucune nouvelle pièce n''a été envoyée'
     SUBMIT_OK: '{count} nouvelles pièces ont été envoyées'
+  LegalFilesNewDocumentEmail:
+    SUBJECT: 'Une nouvelle pièce légale a été mise en ligne'
+    TEXT1: 'Une nouvelle pièce légale a été mise en ligne et doit être passée en revue'
   LegalFilesReminderEmail:
-    GREETINGS: 'Salutations distinguées,'
-    HELLO: 'Cher client,'
     SUBJECT: 'Vos pièces légales sont sur le point d''expirer'
     TEXT1: 'Veuillez noter que les pièces légales suivantes sont sur le point d''expirer:'
     TEXT2: 'Veuillez nous envoyer une version à jour dès que possible.'
+    GREETINGS: 'Salutations distinguées,'
+    HELLO: 'Cher client,'

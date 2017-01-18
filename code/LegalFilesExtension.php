@@ -86,6 +86,7 @@ class LegalFilesExtension extends DataExtension
     public function addNewLegalFile($typeID, $filename, $extension)
     {
         $lf = $this->getLegalFilesByType($typeID);
+        $isNew = false;
 
         if ($lf->count() == 0) {
             $class = $this->ownerBaseClass;
@@ -94,6 +95,8 @@ class LegalFilesExtension extends DataExtension
             $lf->TypeID = $typeID;
             $lf->$rel = $this->owner->ID;
             $lf->write();
+
+            $isNew = true;
         } else {
             $lf = $lf->first();
 
@@ -136,6 +139,18 @@ class LegalFilesExtension extends DataExtension
         $lf->FileID = $file->ID;
         $lf->write();
 
+        if (LegalFile::config()->admin_emails) {
+            if ($isNew) {
+                $template = 'LegalFilesNewDocumentEmail';
+                $emailTitle = _t('LegalFilesNewDocumentEmail.SUBJECT', "A new legal document has been uploaded");
+            } else {
+                $template = 'LegalFilesDocumentReplacedEmail';
+                $emailTitle = _t('LegalFilesDocumentReplacedEmail.SUBJECT', "A legal document has been replaced");
+            }
+            $email = LegalFileEmail::getEmail($lf, $emailTitle, $template);
+            $email->send();
+        }
+
         return $lf;
     }
 
@@ -163,8 +178,7 @@ class LegalFilesExtension extends DataExtension
      */
     public function sendLegalFilesReminder($files)
     {
-        $email = new Email();
-        $email->setSubject(_t('LegalFilesReminderEmail.SUBJECT', "Legal documents are about to be expired"));
+        $emailTitle = _t('LegalFilesReminderEmail.SUBJECT', "Legal documents are about to be expired");
 
         // Create a list of files
         $filesHTML = '';
@@ -172,15 +186,9 @@ class LegalFilesExtension extends DataExtension
             $filesHTML = '- ' . $file->Type()->getTitle() . '<br/>';
         }
 
-        if (class_exists('EmailTemplate') && $email = EmailTemplate::getEmailByCode('legal-files-reminder')) {
+        $templateData = ['Files' => $filesHTML];
 
-        } else {
-            $viewer = new SSViewer('email/LegalFilesReminderEmail');
-            $result = $viewer->process($Member, array('Files' => $filesHTML));
-            $body = (string) $result;
-            $email->setBody($body);
-        }
-
+        $email = LegalFileEmail::getEmail($this->owner, $emailTitle, 'LegalFilesReminderEmail', $templateData);
         $email->setTo($this->owner->Email);
 
         $res = $email->send();

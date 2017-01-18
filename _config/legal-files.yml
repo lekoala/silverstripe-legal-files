@@ -10,6 +10,7 @@ Member:
 LegalFile:
   days_before_reminder: 60
   validation_workflow: true
+  admin_emails: true
   enable_storage: true
   upload_folder: 'LegalFiles'
 Director:
