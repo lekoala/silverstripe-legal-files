@@ -102,8 +102,8 @@ class LegalFilesForm extends Form
             }
 
             $uploadedName = $data['LegalFile']['name'][$typeID];
-            $ext = strtoupper(pathinfo($uploadedName, PATHINFO_EXTENSION));
-            if (!in_array($ext, $this->getValidTypes())) {
+            $ext = strtolower(pathinfo($uploadedName, PATHINFO_EXTENSION));
+            if (!in_array($ext, LegalFile::listValidExtensions())) {
                 $errors[] = _t('LegalFilesForm.INVALID_TYPE', "Document {name} has an invalid type", ['name' => $uploadedName]);
                 continue;
             }
