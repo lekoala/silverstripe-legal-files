@@ -60,11 +60,6 @@ class LegalFilesForm extends Form
         parent::__construct($controller, $formName, $fields, $actions, $validator);
     }
 
-    protected function getValidTypes()
-    {
-        return array('PDF', 'JPG', 'JPEG', 'PNG');
-    }
-
     /**
      * @param string $name
      * @param string $title
@@ -73,7 +68,7 @@ class LegalFilesForm extends Form
      */
     protected function createUploader($name, $title, $desc = null)
     {
-        $validExtensions = $this->getValidTypes();
+        $validExtensions = LegalFile::listValidExtensions();
 
         if (class_exists('FrontendFileField')) {
             $field = new FrontendFileField($name, $title);
