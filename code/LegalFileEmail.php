@@ -49,7 +49,9 @@ class LegalFileEmail
             $email->setBody($body);
         }
 
-        $email->setSubject($title);
+        if (!$email->Subject()) {
+            $email->setSubject($title);
+        }
 
         if ($rcpt) {
             $email->setTo($rcpt);

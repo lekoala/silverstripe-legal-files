@@ -129,7 +129,11 @@ class LegalFilesForm extends Form
                 $member->NotifyNewStatus();
             }
 
-            $this->sessionMessage(_t('LegalFilesForm.SUBMIT_OK', "{count} new documents have been submitted", ['count' => $count]), "good");
+            if (LegalFile::config()->validation_workflow) {
+                $this->sessionMessage(_t('LegalFilesForm.SUBMIT_OK_VALIDATION', "{count} new documents have been submitted. You will receive a confirmation email once all your files are accepted.", ['count' => $count]), "good");
+            } else {
+                $this->sessionMessage(_t('LegalFilesForm.SUBMIT_OK', "{count} new documents have been submitted", ['count' => $count]), "good");
+            }
         }
 
         return $this->getController()->redirectBack();

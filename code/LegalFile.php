@@ -67,6 +67,14 @@ class LegalFile extends DataObject
         $this->Status = self::STATUS_VALID;
         $this->write();
 
+
+        $template = 'LegalFilesDocumentValidEmail';
+        $emailTitle = _t('LegalFilesDocumentValidEmail.SUBJECT', "A legal document has been marked has valid");
+        $email = LegalFileEmail::getEmail($this, $emailTitle, $template);
+        if ($email->To()) {
+            $email->send();
+        }
+
         return _t('LegalFile.MARKED_VALID', 'Marked as valid');
     }
 
@@ -102,7 +110,7 @@ class LegalFile extends DataObject
                 $fields->push(new BetterButtonCustomAction('doInvalid', _t('LegalFile.MARK_INVALID', 'Is invalid')));
             }
             if ($this->Status != self::STATUS_VALID) {
-                $fields->push(new BetterButtonCustomAction('doInvalid', _t('LegalFile.MARK_VALID', 'Is valid')));
+                $fields->push(new BetterButtonCustomAction('doValid', _t('LegalFile.MARK_VALID', 'Is valid')));
             }
             if ($this->Status != self::STATUS_WAITING) {
                 $fields->push(new BetterButtonCustomAction('doWaiting', _t('LegalFile.MARK_WAITING', 'Is waiting')));

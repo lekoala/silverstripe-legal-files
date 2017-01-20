@@ -24,12 +24,15 @@ fr:
     PLURALNAME: 'Types de document'
     SINGULARNAME: 'Type de document'
   LegalFilesDocumentInvalidEmail:
-    SUBJECT: 'Un document a été marquée comme invalide'
+    SUBJECT: 'Un document a été marqué comme invalide'
     TEXT1: 'Le document suivant a été marqué comme invalide'
     TEXT2: 'Veuillez nous envoyer une version à jour dès que possible.'
   LegalFilesDocumentReplacedEmail:
     SUBJECT: 'Une pièce légale a été remplacée'
     TEXT1: 'Une pièce légale a été remplacée et doit être passée en revue'
+  LegalFilesDocumentValidEmail:
+    SUBJECT: 'Un document a été validé'
+    TEXT1: 'Le document suivant a été validé'
   LegalFilesEmail:
     GREETINGS: 'Cordialement,'
     HELLO: 'Cher client,'
@@ -42,6 +45,7 @@ fr:
     SUBMIT: 'Soumettre vos pièces'
     SUBMIT_NO_NEW: 'Aucune nouvelle pièce n''a été envoyée'
     SUBMIT_OK: '{count} nouvelles pièces ont été envoyées'
+    SUBMIT_OK_VALIDATION: '{count} nouvelles pièces ont été envoyées. Vous recevrez un e-mail de confirmation une fois que vos pièces ont été validées.'
     VALID_FORMATS: 'Formats de fichier valides: {formats}'
   LegalFilesNewDocumentEmail:
     SUBJECT: 'Une nouvelle pièce légale a été mise en ligne'
@@ -52,6 +56,4 @@ fr:
     TEXT2: 'Veuillez nous envoyer une version à jour dès que possible.'
     GREETINGS: 'Salutations distinguées,'
     HELLO: 'Cher client,'
-  UploadField:
-    DELETE: 'Delete from files'
     DELETEINFO: 'Permanently delete this file from the file store'
