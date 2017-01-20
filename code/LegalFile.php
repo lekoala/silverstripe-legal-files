@@ -57,6 +57,11 @@ class LegalFile extends DataObject
         'doValid', 'doInvalid', 'doWaiting'
     );
 
+    public static function listValidExtensions()
+    {
+        return self::config()->valid_extensions;
+    }
+
     public function doValid()
     {
         $this->Status = self::STATUS_VALID;
@@ -440,6 +445,7 @@ class LegalFile extends DataObject
             $File->setCanAttachExisting(false);
             $File->setFolderName(self::config()->upload_folder);
             $File->setTemplateFileButtons('LegalUploadField_FileButtons');
+            $File->getValidator()->setAllowedExtensions(self::listValidExtensions());
 
             // Preview frame
             if ($this->FileID) {

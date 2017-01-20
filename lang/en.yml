@@ -38,9 +38,11 @@ en:
     HELLO: 'Dear website administrator,'
   LegalFilesForm:
     INVALID_TYPE: 'Document {name} has an invalid type'
+    MAX_SIZE: 'Maximum size is: {size}'
     SUBMIT: 'Submit your files'
     SUBMIT_NO_NEW: 'No new documents have been submitted'
     SUBMIT_OK: '{count} new documents have been submitted'
+    VALID_FORMATS: 'Valid formats are: {formats}'
   LegalFilesNewDocumentEmail:
     SUBJECT: 'A new legal document has been uploaded'
     TEXT1: 'A new legal document has been uploaded and needs reviewing'

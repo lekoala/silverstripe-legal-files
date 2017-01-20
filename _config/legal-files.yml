@@ -8,6 +8,7 @@ Member:
   extensions:
     - LegalFilesExtension
 LegalFile:
+  valid_extensions: ['jpeg','jpg','png','pdf','doc','docx']
   days_before_reminder: 60
   validation_workflow: true
   admin_emails: true

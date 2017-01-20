@@ -38,9 +38,11 @@ fr:
     HELLO: 'Cher administrateur,'
   LegalFilesForm:
     INVALID_TYPE: 'Le document {name} a un type invalide'
+    MAX_SIZE: 'Taille maximale des documents: {size}'
     SUBMIT: 'Soumettre vos pièces'
     SUBMIT_NO_NEW: 'Aucune nouvelle pièce n''a été envoyée'
     SUBMIT_OK: '{count} nouvelles pièces ont été envoyées'
+    VALID_FORMATS: 'Formats de fichier valides: {formats}'
   LegalFilesNewDocumentEmail:
     SUBJECT: 'Une nouvelle pièce légale a été mise en ligne'
     TEXT1: 'Une nouvelle pièce légale a été mise en ligne et doit être passée en revue'
@@ -50,3 +52,6 @@ fr:
     TEXT2: 'Veuillez nous envoyer une version à jour dès que possible.'
     GREETINGS: 'Salutations distinguées,'
     HELLO: 'Cher client,'
+  UploadField:
+    DELETE: 'Delete from files'
+    DELETEINFO: 'Permanently delete this file from the file store'

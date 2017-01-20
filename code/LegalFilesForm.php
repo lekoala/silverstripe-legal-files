@@ -21,6 +21,14 @@ class LegalFilesForm extends Form
 
         $fields = new FieldList();
 
+        $maxUpload = File::ini2bytes(ini_get('upload_max_filesize'));
+        $maxPost = File::ini2bytes(ini_get('post_max_size'));
+        $uploadSize = min($maxPost, $maxUpload);
+
+        $info = _t('LegalFilesForm.VALID_FORMATS', "Valid formats are: {formats}", ['formats' => implode(',', LegalFile::listValidExtensions())]);
+        $info .= '<br/>' . _t('LegalFilesForm.MAX_SIZE', "Maximum size is: {size}", ['size' => File::format_size($uploadSize)]);
+        $fields->push(new LiteralField('docsInfos', '<div class="message info">' . $info . '</div>'));
+
         foreach ($types as $type) {
             $name = 'LegalFile[' . $type->ID . ']';
             $title = $type->Title;
