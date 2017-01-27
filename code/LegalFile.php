@@ -46,9 +46,15 @@ class LegalFile extends DataObject
     private static $summary_fields = array(
         'Member.Surname' => 'Surname',
         'Member.FirstName' => 'First Name',
-        'Type.Title' => 'Document Type',
+        'Created' => 'Uploaded',
         'ExpiresIn' => 'Expires in',
-        'Reminded' => 'Reminded'
+        'Reminded' => 'Reminded',
+    );
+    private static $searchable_fields = array(
+        'Member.Surname' => 'Surname',
+        'Member.FirstName' => 'First Name',
+        'Created' => 'Uploaded',
+        'Reminded' => 'Reminded',
     );
     private static $default_sort = array(
         'ExpirationDate ASC'
@@ -127,6 +133,23 @@ class LegalFile extends DataObject
         if (self::config()->validation_workflow) {
             $fields['TranslatedStatus'] = _t('LegalFile.SUMMARY_STATUS', 'Status');
         }
+
+        return $fields;
+    }
+
+    public function searchableFields()
+    {
+        $fields = parent::searchableFields();
+
+        if (self::config()->validation_workflow) {
+            $fields['Status'] = [
+                'title' => _t('LegalFile.SUMMARY_STATUS', 'Status'),
+                'filter' => 'ExactMatchFilter',
+            ];
+        }
+
+        $fields['Created']['field'] = 'DateField';
+        $fields['Reminded']['field'] = 'DateField';
 
         return $fields;
     }
