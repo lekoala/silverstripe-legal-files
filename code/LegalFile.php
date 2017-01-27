@@ -254,13 +254,20 @@ class LegalFile extends DataObject
     {
         $stat = $this->Status;
 
-        if (!$this->ExpirationDate) {
+        if (self::config()->validation_workflow) {
             if ($stat == 'Invalid') {
                 return 'red';
+            }
+            if ($stat == 'Waiting') {
+                return 'amber';
             }
             if ($stat == 'Valid') {
                 return 'green';
             }
+            return '';
+        }
+
+        if (!$this->ExpirationDate) {
             return '';
         }
         $dt = new DateTime($this->ExpirationDate);
@@ -274,18 +281,11 @@ class LegalFile extends DataObject
             return 'red';
         }
 
-        if ($stat == 'Invalid') {
-            return 'red';
-        } else {
-            // Warn about documents that are about to expire
-            if ($days && $diff_days < $days) {
-                return 'amber';
-            }
-        }
-        if ($stat == 'Waiting') {
+        // Warn about documents that are about to expire
+        if ($days && $diff_days < $days) {
             return 'amber';
         }
-        if ($stat == 'Valid') {
+        if ($days && $diff_days > $days) {
             return 'green';
         }
         return '';
