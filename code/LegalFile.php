@@ -47,7 +47,6 @@ class LegalFile extends DataObject
         'Member.Surname' => 'Surname',
         'Member.FirstName' => 'First Name',
         'Created' => 'Uploaded',
-        'ExpiresIn' => 'Expires in',
         'Reminded' => 'Reminded',
     );
     private static $searchable_fields = array(
@@ -305,6 +304,16 @@ class LegalFile extends DataObject
         return false;
     }
 
+    public function IsValid()
+    {
+        return $this->Status == self::STATUS_VALID || !$this->IsExpired();
+    }
+
+    public function IsInvalid()
+    {
+        return $this->Status == self::STATUS_INVALID || $this->IsExpired();
+    }
+
     public function ExpiresIn()
     {
         if (!$this->ExpirationDate) {
@@ -463,7 +472,7 @@ class LegalFile extends DataObject
 
         $ownerClass = $this->OwnerClass();
 
-        $fields->removeByName('ReviewedMemberID');
+        $fields->removeByName('ReviewMemberID');
 
         // Validation workflow
         if (!self::config()->validation_workflow) {
@@ -543,21 +552,34 @@ class LegalFile extends DataObject
             $newField = null;
             $fieldName = $class . 'ID';
 
+            // We have a current owner, simple show a grid field
             if ($ownerClass) {
-                $gfc = GridFieldConfig_RecordViewer::create();
+                $this->OwnerObject()->refreshLegalState(true);
+
+                $gfc = GridFieldConfig_RecordEditor::create();
                 $gfc->removeComponentsByType('GridFieldSortableHeader');
                 $gfc->removeComponentsByType('GridFieldFilterHeader');
                 $gfc->removeComponentsByType('GridFieldPaginator');
                 $gfc->removeComponentsByType('GridFieldPageCount');
-                $gfc->removeComponentsByType('GridFieldToolbarHeader');
+                $gfc->removeComponentsByType('GridFieldDeleteAction');
+                $gfc->removeComponentsByType('GridFieldAddNewButton');
+                $gfc->addComponent(new GridFieldTitleHeader());
 
                 $newField = new GridField($fieldName, '', $class::get()->filter('ID', $this->OwnerID()), $gfc);
                 $newField->setModelClass($class);
-            } else {
+
+                $summaryFields = singleton($class)->summaryFields();
+                $summaryFields['TranslatedLegalState'] = _t('LegalFile.LegalState', 'Legal State');
+                /* @var $cols GridFieldDataColumns */
+                $cols = $gfc->getComponentByType('GridFieldDataColumns');
+                $cols->setDisplayFields($summaryFields);
+            }
+            // We don't have a owner, show a picker field
+            else {
                 if (class_exists('HasOnePickerField')) {
                     $newField = new HasOnePickerField($this, $fieldName, '', $this->$class());
+                    $newField->enableEdit();
                     $gfc = $newField->getConfig();
-                    $gfc->removeComponentsByType('GridFieldToolbarHeader');
                 }
             }
 

@@ -10,6 +10,13 @@
 class LegalFilesExtension extends DataExtension
 {
 
+    const STATE_NONE = 'none'; // no legal files attached
+    const STATE_INVALID = 'invalid'; // has some expired, missing or invalid documents
+    const STATE_VALID = 'valid'; // all documents are not expired
+
+    private static $db = array(
+        'LegalState' => "Enum('none,invalid,valid','none')",
+    );
     private static $has_many = array(
         'LegalFiles' => 'LegalFile',
     );
@@ -17,6 +24,18 @@ class LegalFilesExtension extends DataExtension
     private static $better_buttons_actions = array(
         'doSendLegalFilesReminder'
     );
+
+    public function TranslatedLegalState()
+    {
+        switch ($this->owner->LegalState) {
+            case self::STATE_NONE:
+                return _t('LegalFilesExtension.STATE_NONE', 'No legal files');
+            case self::STATE_INVALID:
+                return _t('LegalFilesExtension.STATE_INVALID', 'Invalid');
+            case self::STATE_VALID:
+                return _t('LegalFilesExtension.STATE_VALID', 'Valid');
+        }
+    }
 
     public function updateBetterButtonsActions(FieldList $actions)
     {
@@ -200,6 +219,39 @@ class LegalFilesExtension extends DataExtension
             }
         }
         return $res;
+    }
+
+    /**
+     * Refresh legal state based on current legal files
+     */
+    public function refreshLegalState($writeIfChanged = false)
+    {
+        $files = $this->owner->LegalFiles();
+        if ($files->count() == 0) {
+            $this->owner->LegalState = self::STATE_NONE;
+        } else {
+            $state = self::STATE_VALID;
+            /* @var $file LegalFile */
+            foreach ($files as $file) {
+                if ($file->IsInvalid()) {
+                    $state = self::STATE_INVALID;
+                }
+            }
+            $this->owner->LegalState = $state;
+        }
+
+        if ($writeIfChanged) {
+            if ($this->owner->isChanged('LegalState', 2)) {
+                $this->owner->write();
+            }
+        }
+    }
+
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+
+        $this->refreshLegalState();
     }
 
     public function updateCMSFields(\FieldList $fields)
