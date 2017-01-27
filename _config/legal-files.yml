@@ -10,6 +10,7 @@ Member:
 LegalFile:
   valid_extensions: ['jpeg','jpg','png','pdf','doc','docx']
   days_before_reminder: 60
+  max_size: '12M'
   validation_workflow: true
   admin_emails: true
   enable_storage: true

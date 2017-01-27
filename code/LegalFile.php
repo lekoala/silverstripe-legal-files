@@ -369,6 +369,20 @@ class LegalFile extends DataObject
     }
 
     /**
+     * Get maximum file size in bytes
+     * 
+     * @return int
+     */
+    public static function getMaxSize()
+    {
+        $maxUpload = File::ini2bytes(ini_get('upload_max_filesize'));
+        $maxPost = File::ini2bytes(ini_get('post_max_size'));
+        $legalSize = File::ini2bytes(LegalFile::config()->max_size);
+
+        return min($maxPost, $maxUpload, $legalSize);
+    }
+
+    /**
      * Return a list of types
      *
      * @param string $forClass
@@ -477,6 +491,7 @@ class LegalFile extends DataObject
             $File->setFolderName(self::config()->upload_folder);
             $File->setTemplateFileButtons('LegalUploadField_FileButtons');
             $File->getValidator()->setAllowedExtensions(self::listValidExtensions());
+            $File->getValidator()->setAllowedMaxFileSize(self::getMaxSize());
 
             // Preview frame
             if ($this->FileID) {
