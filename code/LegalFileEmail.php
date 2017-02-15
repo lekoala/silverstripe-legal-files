@@ -59,4 +59,24 @@ class LegalFileEmail
 
         return $email;
     }
+
+    /**
+     * Return the admin email
+     * 
+     * @return string
+     */
+    public static function getAdminEmail()
+    {
+        $to = LegalFile::config()->admin_to;
+        if ($to) {
+            return $to;
+        }
+        if (class_exists('MandrillMailer')) {
+            return MandrillMailer::resolveDefaultToEmail();
+        }
+        if (class_exists('SparkPostMailer')) {
+            return SparkPostMailer::resolveDefaultToEmail();
+        }
+        return Email::config()->admin_email;
+    }
 }

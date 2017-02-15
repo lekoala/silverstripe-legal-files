@@ -167,6 +167,7 @@ class LegalFilesExtension extends DataExtension
                 $emailTitle = _t('LegalFilesDocumentReplacedEmail.SUBJECT', "A legal document has been replaced");
             }
             $email = LegalFileEmail::getEmail($lf, $emailTitle, $template);
+            $email->setTo(LegalFileEmail::getAdminEmail());
             $email->send();
         }
 

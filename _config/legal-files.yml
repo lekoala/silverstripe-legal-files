@@ -13,6 +13,7 @@ LegalFile:
   max_size: '12M'
   validation_workflow: true
   admin_emails: true
+  admin_to: ''
   enable_storage: true
   upload_folder: 'LegalFiles'
 Director:
