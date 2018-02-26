@@ -178,7 +178,7 @@ class LegalFile extends DataObject
     {
         $date = new Date();
         $date->setValue($this->LastEdited);
-        return Convert::raw2xml($date->FormatFromSettings());
+        return Convert::raw2xml($date->Nice());
     }
 
     /**
@@ -379,7 +379,7 @@ class LegalFile extends DataObject
 
     /**
      * Get maximum file size in bytes
-     * 
+     *
      * @return int
      */
     public static function getMaxSize()
