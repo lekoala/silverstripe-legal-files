@@ -171,6 +171,8 @@ class LegalFilesExtension extends DataExtension
             $email->send();
         }
 
+        $this->owner->extend('onNewLegalFile', $lf);
+
         return $lf;
     }
 
