@@ -1,1 +1,0 @@
-RewriteRule .* /_legalfiles?file=%{REQUEST_FILENAME}&%{QUERY_STRING} [L,NC]

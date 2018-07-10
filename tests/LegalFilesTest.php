@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Dev\SapphireTest;
+
 /**
  * Tests for Legal Files modules
  */
@@ -7,7 +9,6 @@ class LegalFilesTest extends SapphireTest
 {
 
     protected static $fixture_file = 'LegalFilesTest.yml';
-    protected $usesDatabase = true;
 
     public function testTypesCount()
     {
@@ -45,9 +46,8 @@ class LegalFilesTest extends SapphireTest
     {
         /* @var $waitingFile LegalFile */
         $waitingFile = LegalFile::get()->filter('Status', LegalFile::STATUS_WAITING)->first();
-
         $waitingFile->doInvalid();
 
-        $this->assertTrue($waitingFile->Status == LegalFile::STATUS_INVALID);
+        $this->assertEquals(LegalFile::STATUS_INVALID, $waitingFile->Status);
     }
 }

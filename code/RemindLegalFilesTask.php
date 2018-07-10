@@ -1,5 +1,9 @@
 <?php
 
+use SilverStripe\ORM\GroupedList;
+use SilverStripe\Security\Member;
+use SilverStripe\CronTask\Interfaces\CronTask;
+
 /**
  * A cron task to remind people about the expiration of their documents
  *

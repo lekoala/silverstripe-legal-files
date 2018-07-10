@@ -1,5 +1,12 @@
 <?php
 
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Security\Member;
+use SilverStripe\Assets\File;
+use SilverStripe\Forms\DateField;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
+
 /**
  * Store a legal file
  *
@@ -9,23 +16,25 @@
  * @property string $Notes
  * @property string $Reviewed
  * @property string $Reminded
- * @property string $Deleted
  * @property int $TypeID
  * @property int $FileID
  * @property int $MemberID
+ * @property int $ReviewMemberID
  * @property int $CompanyID
- * @property int $DeletedByID
- * @method LegalFileType Type()
- * @method File File()
- * @method Member Member()
- * @method Company Company()
- * @method Member DeletedBy()
- * @mixin MyLegalFile
- * @mixin SoftDeletable
+ * @property int $MemberCompanyID
+ * @method \LegalFileType Type()
+ * @method \SilverStripe\Assets\File File()
+ * @method \SilverStripe\Security\Member Member()
+ * @method \SilverStripe\Security\Member ReviewMember()
+ * @method \Company Company()
+ * @method \Company MemberCompany()
+ * @mixin \MyLegalFile
  */
 class LegalFile extends DataObject
 {
+    use LegalFilePermissions;
 
+    // Status
     const STATUS_VALID = 'Valid';
     const STATUS_INVALID = 'Invalid';
     const STATUS_WAITING = 'Waiting';
@@ -34,14 +43,14 @@ class LegalFile extends DataObject
         'ExpirationDate' => 'Date',
         'Status' => "Enum('Waiting,Valid,Invalid','Waiting')",
         'Notes' => 'Text',
-        'Reviewed' => 'SS_Datetime',
-        'Reminded' => 'SS_Datetime',
+        'Reviewed' => 'Datetime',
+        'Reminded' => 'Datetime',
     );
     private static $has_one = array(
         'Type' => 'LegalFileType',
-        'File' => 'File',
-        'Member' => 'Member',
-        'ReviewMember' => 'Member',
+        'File' => File::class,
+        'Member' => Member::class,
+        'ReviewMember' => Member::class,
     );
     private static $summary_fields = array(
         'Member.Surname' => 'Surname',
@@ -49,11 +58,15 @@ class LegalFile extends DataObject
         'Created' => 'Uploaded',
         'Reminded' => 'Reminded',
     );
+    /**
+     * @link https://docs.silverstripe.org/en/4/developer_guides/model/scaffolding/
+     * @var array
+     */
     private static $searchable_fields = array(
-        'Member.Surname' => 'Surname',
-        'Member.FirstName' => 'First Name',
-        'Created' => 'Uploaded',
-        'Reminded' => 'Reminded',
+        'Member.Surname',
+        'Member.FirstName',
+        'Created',
+        'Reminded',
     );
     private static $default_sort = array(
         'ExpirationDate ASC'
@@ -91,7 +104,7 @@ class LegalFile extends DataObject
         $template = 'LegalFilesDocumentInvalidEmail';
         $emailTitle = _t('LegalFilesDocumentInvalidEmail.SUBJECT', "A legal document has been marked has invalid");
         $email = LegalFileEmail::getEmail($this, $emailTitle, $template);
-        if ($email->To()) {
+        if ($email->getTo()) {
             $email->send();
         }
 
@@ -147,8 +160,8 @@ class LegalFile extends DataObject
             ];
         }
 
-        $fields['Created']['field'] = 'DateField';
-        $fields['Reminded']['field'] = 'DateField';
+        $fields['Created']['field'] = DateField::class;
+        $fields['Reminded']['field'] = DateField::class;
 
         return $fields;
     }
@@ -210,26 +223,6 @@ class LegalFile extends DataObject
             case self::STATUS_WAITING:
                 return _t('LegalFile.STATUS_WAITING', 'waiting');
         }
-    }
-
-    public function canView($member = null)
-    {
-        return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
-    }
-
-    public function canEdit($member = null)
-    {
-        return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
-    }
-
-    public function canCreate($member = null)
-    {
-        return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
-    }
-
-    public function canDelete($member = null)
-    {
-        return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
     }
 
     public function getTitle()
@@ -354,14 +347,14 @@ class LegalFile extends DataObject
         }
     }
 
-    protected function validate()
+    public function validate()
     {
         $result = parent::validate();
         if (!$this->TypeID) {
-            $result->error("Type must be defined");
+            $result->addError("Type must be defined");
         }
         if (!$this->OwnerClass()) {
-            $result->error("Must have a owner");
+            $result->addError("Must have a owner");
         }
         return $result;
     }
@@ -531,7 +524,9 @@ class LegalFile extends DataObject
         $fields->removeByName('TypeID');
         if (!empty($types)) {
             $fields->insertBefore(
-                new DropdownField('TypeID', $this->fieldLabel('Type'), $types), 'ExpirationDate');
+                new DropdownField('TypeID', $this->fieldLabel('Type'), $types),
+                'ExpirationDate'
+            );
         }
 
         // If we have a type, it might change some fields
@@ -571,16 +566,17 @@ class LegalFile extends DataObject
                 $summaryFields = singleton($class)->summaryFields();
                 $summaryFields['TranslatedLegalState'] = _t('LegalFile.LegalState', 'Legal State');
                 /* @var $cols GridFieldDataColumns */
-                $cols = $gfc->getComponentByType('GridFieldDataColumns');
-                $cols->setDisplayFields($summaryFields);
-            }
-            // We don't have a owner, show a picker field
-            else {
-                if (class_exists('HasOnePickerField')) {
-                    $newField = new HasOnePickerField($this, $fieldName, '', $this->$class());
-                    $newField->enableEdit();
-                    $gfc = $newField->getConfig();
+                $cols = $gfc->getComponentByType(GridFieldDataColumns::class);
+                if($cols) {
+                    $cols->setDisplayFields($summaryFields);
                 }
+            } else {
+                // We don't have a owner, show a picker field
+                // if (class_exists('HasOnePickerField')) {
+                //     $newField = new HasOnePickerField($this, $fieldName, '', $this->$class());
+                //     $newField->enableEdit();
+                //     $gfc = $newField->getConfig();
+                // }
             }
 
             if ($newField) {

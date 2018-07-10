@@ -1,5 +1,8 @@
 <?php
 
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Member;
+
 /**
  * Describe a type of legal file
  *
@@ -9,10 +12,11 @@
  * @property string $ApplyOnlyTo
  * @property boolean $CannotExpire
  * @property boolean $Mandatory
- * @method DataList|LegalFile[] Files()
+ * @method \SilverStripe\ORM\DataList|\LegalFile[] Files()
  */
 class LegalFileType extends DataObject
 {
+    use LegalFilePermissions;
 
     private static $db = array(
         'Title' => "Varchar(255)",
@@ -34,6 +38,38 @@ class LegalFileType extends DataObject
     private static $default_sort = array(
         'Title ASC'
     );
+    private static $default_records= [
+        [
+            'Title' => 'National ID Card',
+            'ApplyOnlyTo' => Member::class,
+        ],
+        [
+            'Title' => 'Passport',
+            'ApplyOnlyTo' => Member::class,
+        ],
+        [
+            'Title' => 'Proof of Address',
+            'ApplyOnlyTo' => Member::class,
+        ],
+        [
+            'Title' => 'Proof of IBAN',
+            'ApplyOnlyTo' => Member::class,
+        ],
+        [
+            'Title' => 'Residence Permit',
+            'ApplyOnlyTo' => Member::class,
+        ],
+        [
+            'Title' => 'Company Registration',
+            'CannotExpire' => true,
+            'ApplyOnlyTo' => 'Company',
+        ],
+        [
+            'Title' => 'Founding Document',
+            'CannotExpire' => true,
+            'ApplyOnlyTo' => 'Company',
+        ],
+    ];
 
     public function getName()
     {
@@ -62,36 +98,16 @@ class LegalFileType extends DataObject
         return $fields;
     }
 
-    public function canView($member = null)
-    {
-        return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
-    }
-
-    public function canEdit($member = null)
-    {
-        return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
-    }
-
-    public function canCreate($member = null)
-    {
-        return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
-    }
-
-    public function canDelete($member = null)
-    {
-        return Permission::check('CMS_ACCESS_LegalFilesAdmin', 'any', $member);
-    }
-
     protected function onBeforeWrite()
     {
         parent::onBeforeWrite();
     }
 
-    protected function validate()
+    public function validate()
     {
         $result = parent::validate();
         if (!$this->Title) {
-            $result->error("Title must be defined");
+            $result->addError("Title must be defined");
         }
         return $result;
     }

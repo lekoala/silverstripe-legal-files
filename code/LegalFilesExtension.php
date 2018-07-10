@@ -1,15 +1,23 @@
 <?php
 
+use SilverStripe\Assets\Folder;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Security\Member;
+use SilverStripe\Control\Director;
+use SilverStripe\ORM\DataExtension;
+
 /**
  * Simply apply this extension to any type of record that use legal files
  *
  * @author Koala
- * @property Member|Company|LegalFilesExtension $owner
- * @method DataList|LegalFile[] LegalFiles()
+ * @property \SilverStripe\Security\Member|\LegalFilesExtension $owner
+ * @property string $LegalState
+ * @method \SilverStripe\ORM\DataList|\LegalFile[] LegalFiles()
  */
 class LegalFilesExtension extends DataExtension
 {
-
     const STATE_NONE = 'none'; // no legal files attached
     const STATE_INVALID = 'invalid'; // has some expired, missing or invalid documents
     const STATE_VALID = 'valid'; // all documents are not expired
@@ -49,18 +57,23 @@ class LegalFilesExtension extends DataExtension
         }
     }
 
+    /**
+     * A list of files with legal files
+     * @return array
+     */
     public static function listClassesWithLegalFile()
     {
         if (self::$legalFileObjects === null) {
             self::$legalFileObjects = array();
-            $dataobjects = ClassInfo::subclassesFor('DataObject');
+            $dataobjects = ClassInfo::subclassesFor(DataObject::class);
+            array_shift($dataobjects);
             foreach ($dataobjects as $dataobject) {
                 $singl = singleton($dataobject);
 
                 if ($singl->hasExtension('LegalFilesExtension')) {
                     // Ignore custom classes
                     $parent = get_parent_class($dataobject);
-                    if ($parent != 'DataObject') {
+                    if ($parent != DataObject::class) {
                         continue;
                     }
                     // Ignore pages
@@ -257,7 +270,7 @@ class LegalFilesExtension extends DataExtension
         $this->refreshLegalState();
     }
 
-    public function updateCMSFields(\FieldList $fields)
+    public function updateCMSFields(FieldList $fields)
     {
         /* @var $legalFiles GridField */
         $legalFiles = $fields->dataFieldByName('LegalFiles');
@@ -288,7 +301,7 @@ class LegalFilesExtension extends DataExtension
             $detailForm = $config->getComponentByType('GridFieldDetailForm');
             $owner = $this->owner;
             $base = $this->ownerBaseClass;
-            $detailForm->setItemEditFormCallback(function(Form $form) use ($owner, $base) {
+            $detailForm->setItemEditFormCallback(function (Form $form) use ($owner, $base) {
                 $fieldName = $base . 'ID';
                 $form->Fields()->push(new HiddenField($fieldName, null, $owner->ID));
             });

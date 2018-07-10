@@ -3,8 +3,15 @@ SilverStripe Legal Files module
 
 WARNING : This is very much work in progress!
 
+Introduction
+------------------
+
 This module adds a new admin section to allow administration of legal files.
-Legal files always belong to a Member but can alsi be attached to any DataObject 
+
+Attaching to other classes
+------------------
+
+Legal files always belong to a Member but can also be attached to any DataObject
 through the LegalFileExtension (for example, for a Company).
 
 Since LegalFiles are represented as a has_many relation, you need to define
@@ -31,7 +38,7 @@ Securing assets
 The root folder will get an htaccess that will redirect all requests to a
 dedicated controller. This will only work with Apache.
 TODO : support private assets or secure assets module.
-    
+
 Remind members about expiring document
 ------------------
 
@@ -70,7 +77,7 @@ And the following css :
 
 Compatibility
 ==================
-Tested with 3.x
+Tested with ^4.1
 
 Maintainer
 ==================

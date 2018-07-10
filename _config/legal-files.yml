@@ -2,9 +2,8 @@
 Name: legal-files
 After:
   - 'framework/*'
-  - 'cms/*'
 ---
-Member:
+SilverStripe\Security\Member:
   extensions:
     - LegalFilesExtension
 LegalFile:
@@ -16,13 +15,14 @@ LegalFile:
   admin_to: ''
   enable_storage: true
   upload_folder: 'LegalFiles'
-Director:
+SilverStripe\Control\Director:
   rules:
     '_legalfiles': 'LegalFilesController'
 ---
 Only:
-  classexists: 'Fluent'
+  moduleexists:
+    - 'tractorcow/silverstripe-fluent'
 ---
 LegalFileType:
   extensions:
-    [FluentExtension]
+    - 'TractorCow\Fluent\Extension\FluentExtension'

@@ -1,13 +1,15 @@
 <?php
 
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
+use SilverStripe\Control\Controller;
+
 /**
  * A simple controller
  *
  */
 class LegalFilesController extends Controller
 {
-
-    public static $allowed_actions = array();
 
     public function init()
     {

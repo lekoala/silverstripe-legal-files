@@ -1,5 +1,10 @@
 <?php
 
+use SilverStripe\Assets\Folder;
+use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\Control\Director;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
+
 /**
  * Manage legal documents
  *
@@ -7,19 +12,18 @@
  */
 class LegalFileAdmin extends ModelAdmin
 {
-
     private static $managed_models = array(
         'LegalFile', 'LegalFileType'
     );
     private static $url_segment = 'legal-documents';
     private static $menu_title = 'Legal Documents';
-    private static $awesome_icon = "fa-file-text";
+    // You need to support font awesome as icons for this
+    private static $menu_icon_class = 'fa fa-file-text';
     public $showImportForm = false;
 
     public function init()
     {
         parent::init();
-        self::initLegalFilesFolder();
     }
 
     public function getList()
@@ -56,16 +60,15 @@ class LegalFileAdmin extends ModelAdmin
 
         if ($this->modelClass == 'LegalFile') {
             /* @var $cols GridFieldDataColumns */
-            $cols = $gridfield->getConfig()->getComponentByType('GridFieldDataColumns');
-
+            $cols = $gridfield->getConfig()->getComponentByType(GridFieldDataColumns::class);
             $cols->setFieldFormatting(array(
-                'Member.Surname' => function($val, $item) {
+                'Member.Surname' => function ($val, $item) {
                     if (!$val) {
                         return;
                     }
                     return '<a href="' . LegalFileAdmin::buildMemberEditLink($item) . '">' . $val . '</a>';
                 },
-                'Member.FirstName' => function($val, $item) {
+                'Member.FirstName' => function ($val, $item) {
                     if (!$val) {
                         return;
                     }
@@ -104,21 +107,5 @@ class LegalFileAdmin extends ModelAdmin
     public static function getLegalFilesDir()
     {
         return LegalFile::config()->upload_folder;
-    }
-
-    /**
-     * Init dir
-     */
-    public static function initLegalFilesFolder()
-    {
-        $folder = self::getBaseLegalFilesFolder();
-        $path = $folder->getFullPath();
-
-        // Restrict access to the storage folder
-        if (!is_file($path . DIRECTORY_SEPARATOR . '.htaccess')) {
-            $ressourcesPath = Director::baseFolder() . DIRECTORY_SEPARATOR . LEGALFILES_DIR . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR;
-
-            copy($ressourcesPath . '.htaccess', $path . DIRECTORY_SEPARATOR . '.htaccess');
-        }
     }
 }

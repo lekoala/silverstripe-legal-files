@@ -1,9 +1,12 @@
 <?php
 
+use SilverStripe\View\SSViewer;
+use SilverStripe\Control\Email\Email;
+
 /**
  * LegalFileEmail
  *
- * @author Kalyptus SPRL <thomas@kalyptus.be>
+ * @author Koala
  */
 class LegalFileEmail
 {
@@ -15,7 +18,7 @@ class LegalFileEmail
      * @param string $title
      * @param string $template
      * @param array $templateData
-     * @return \Email
+     * @return Email
      */
     public static function getEmail($dataobject, $title, $template, $templateData = null)
     {
@@ -49,7 +52,7 @@ class LegalFileEmail
             $email->setBody($body);
         }
 
-        if (!$email->Subject()) {
+        if (!$email->getSubject()) {
             $email->setSubject($title);
         }
 
@@ -62,7 +65,7 @@ class LegalFileEmail
 
     /**
      * Return the admin email
-     * 
+     *
      * @return string
      */
     public static function getAdminEmail()

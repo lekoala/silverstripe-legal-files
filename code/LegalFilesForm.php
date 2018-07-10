@@ -1,5 +1,12 @@
 <?php
 
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\FileField;
+use SilverStripe\Security\Member;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\RequiredFields;
+
 /**
  * A form to manage legal documents of current member
  *
@@ -10,9 +17,13 @@
  */
 class LegalFilesForm extends Form
 {
-
-    public function __construct($controller, $formName = 'LegalFilesForm', \FieldList $fields = null, \FieldList $actions = null, $validator = null)
-    {
+    public function __construct(
+        $controller,
+        $formName = 'LegalFilesForm',
+        FieldList $fields = null,
+        FieldList $actions = null,
+        $validator = null
+    ) {
         $member = Member::currentUser();
 
         $types = LegalFile::TypesDatalist('Member');
@@ -69,12 +80,7 @@ class LegalFilesForm extends Form
     {
         $validExtensions = LegalFile::listValidExtensions();
 
-        if (class_exists('FrontendFileField')) {
-            $field = new FrontendFileField($name, $title);
-            $field->setPreview(true);
-        } else {
-            $field = FileField::create($name, $title);
-        }
+        $field = FileField::create($name, $title);
 
         if ($desc) {
             $field->setDescription($desc);
