@@ -1,11 +1,20 @@
 <?php
 
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Forms\DropdownField;
-use SilverStripe\Security\Member;
 use SilverStripe\Assets\File;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DateField;
+use SilverStripe\Security\Member;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldPageCount;
+use SilverStripe\Forms\GridField\GridFieldPaginator;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use Symbiote\GridFieldExtensions\GridFieldTitleHeader;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\GridField\GridFieldDeleteAction;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader;
+use SilverStripe\Forms\GridField\GridFieldSortableHeader;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 
 /**
  * Store a legal file
@@ -552,12 +561,12 @@ class LegalFile extends DataObject
                 $this->OwnerObject()->refreshLegalState(true);
 
                 $gfc = GridFieldConfig_RecordEditor::create();
-                $gfc->removeComponentsByType('GridFieldSortableHeader');
-                $gfc->removeComponentsByType('GridFieldFilterHeader');
-                $gfc->removeComponentsByType('GridFieldPaginator');
-                $gfc->removeComponentsByType('GridFieldPageCount');
-                $gfc->removeComponentsByType('GridFieldDeleteAction');
-                $gfc->removeComponentsByType('GridFieldAddNewButton');
+                $gfc->removeComponentsByType(GridFieldSortableHeader::class);
+                $gfc->removeComponentsByType(GridFieldFilterHeader::class);
+                $gfc->removeComponentsByType(GridFieldPaginator::class);
+                $gfc->removeComponentsByType(GridFieldPageCount::class);
+                $gfc->removeComponentsByType(GridFieldDeleteAction::class);
+                $gfc->removeComponentsByType(GridFieldAddNewButton::class);
                 $gfc->addComponent(new GridFieldTitleHeader());
 
                 $newField = new GridField($fieldName, '', $class::get()->filter('ID', $this->OwnerID()), $gfc);
@@ -567,7 +576,7 @@ class LegalFile extends DataObject
                 $summaryFields['TranslatedLegalState'] = _t('LegalFile.LegalState', 'Legal State');
                 /* @var $cols GridFieldDataColumns */
                 $cols = $gfc->getComponentByType(GridFieldDataColumns::class);
-                if($cols) {
+                if ($cols) {
                     $cols->setDisplayFields($summaryFields);
                 }
             } else {

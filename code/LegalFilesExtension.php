@@ -1,12 +1,18 @@
 <?php
 
+use SilverStripe\Forms\Form;
 use SilverStripe\Assets\Folder;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Director;
+use SilverStripe\Forms\HiddenField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Forms\GridField\GridFieldDetailForm;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use SilverStripe\Forms\GridField\GridFieldDeleteAction;
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 
 /**
  * Simply apply this extension to any type of record that use legal files
@@ -280,8 +286,8 @@ class LegalFilesExtension extends DataExtension
             // Update summary fields
 
             /* @var $dc GridFieldDataColumns */
-            if ($this->ownerBaseClass == 'Member') {
-                $dc = $config->getComponentByType('GridFieldDataColumns');
+            if ($this->owner instanceof Member) {
+                $dc = $config->getComponentByType(GridFieldDataColumns::class);
                 $displayFields = $dc->getDisplayFields($legalFiles);
                 unset($displayFields['Member.FirstName']);
                 unset($displayFields['Member.Surname']);
@@ -289,37 +295,22 @@ class LegalFilesExtension extends DataExtension
             }
 
             // No link existing
-            $config->removeComponentsByType('GridFieldAddExistingAutocompleter');
+            $config->removeComponentsByType(GridFieldAddExistingAutocompleter::class);
 
             // No unlink
-            $config->removeComponentsByType('GridFieldDeleteAction');
+            $config->removeComponentsByType(GridFieldDeleteAction::class);
             $config->addComponent(new GridFieldDeleteAction(false));
 
             // Assign
 
             /* @var $detailForm GridFieldDetailForm */
-            $detailForm = $config->getComponentByType('GridFieldDetailForm');
+            $detailForm = $config->getComponentByType(GridFieldDetailForm::class);
             $owner = $this->owner;
-            $base = $this->ownerBaseClass;
+            $base = get_class($this->owner);
             $detailForm->setItemEditFormCallback(function (Form $form) use ($owner, $base) {
                 $fieldName = $base . 'ID';
                 $form->Fields()->push(new HiddenField($fieldName, null, $owner->ID));
             });
-
-            // Bulk manager
-            if (class_exists('GridFieldBulkManager')) {
-                $config->addComponent($bulkManager = new GridFieldBulkManager);
-                $bulkManager->removeBulkAction('unLink');
-
-                if (LegalFile::config()->enable_storage) {
-                    $config->addComponent($bulkUpload = new GridFieldBulkUpload);
-
-                    if ($this->owner->hasMethod('getOwnFolder')) {
-                        $bulkUpload->setUfSetup('setFolderName', $this->owner->getOwnFolder());
-                    }
-                    $bulkUpload->setUfSetup('setCanAttachExisting', false);
-                }
-            }
         }
     }
 }
