@@ -41,23 +41,23 @@ class LegalFileType extends DataObject
     private static $default_records= [
         [
             'Title' => 'National ID Card',
-            'ApplyOnlyTo' => Member::class,
+            'ApplyOnlyTo' => 'Member',
         ],
         [
             'Title' => 'Passport',
-            'ApplyOnlyTo' => Member::class,
+            'ApplyOnlyTo' => 'Member',
         ],
         [
             'Title' => 'Proof of Address',
-            'ApplyOnlyTo' => Member::class,
+            'ApplyOnlyTo' => 'Member',
         ],
         [
             'Title' => 'Proof of IBAN',
-            'ApplyOnlyTo' => Member::class,
+            'ApplyOnlyTo' => 'Member',
         ],
         [
             'Title' => 'Residence Permit',
-            'ApplyOnlyTo' => Member::class,
+            'ApplyOnlyTo' => 'Member',
         ],
         [
             'Title' => 'Company Registration',

@@ -401,6 +401,8 @@ class LegalFile extends DataObject
      */
     public static function TypesDatalist($forClass = null)
     {
+        $parts = explode('\\', $forClass);
+        $forClass = end($parts);
         $q = LegalFileType::get();
         if ($forClass) {
             //TODO: like clause may fail

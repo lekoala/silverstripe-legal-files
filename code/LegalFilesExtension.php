@@ -9,6 +9,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Control\Director;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldDetailForm;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
@@ -306,9 +307,12 @@ class LegalFilesExtension extends DataExtension
             /* @var $detailForm GridFieldDetailForm */
             $detailForm = $config->getComponentByType(GridFieldDetailForm::class);
             $owner = $this->owner;
-            $base = get_class($this->owner);
-            $detailForm->setItemEditFormCallback(function (Form $form) use ($owner, $base) {
-                $fieldName = $base . 'ID';
+            $detailForm->setItemEditFormCallback(function (Form $form) use ($owner) {
+                $parts = explode('\\', get_class($owner));
+                $class = end($parts);
+
+                // This assume that relation = class without namespace
+                $fieldName = $class . 'ID';
                 $form->Fields()->push(new HiddenField($fieldName, null, $owner->ID));
             });
         }
