@@ -17,8 +17,7 @@ class LegalFileAdmin extends ModelAdmin
     );
     private static $url_segment = 'legal-documents';
     private static $menu_title = 'Legal Documents';
-    // You need to support font awesome as icons for this
-    private static $menu_icon_class = 'fa fa-file-text';
+    private static $menu_icon_class = 'font-icon-book';
     public $showImportForm = false;
 
     public function init()
