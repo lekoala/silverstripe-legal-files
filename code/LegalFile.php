@@ -5,6 +5,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DateField;
 use SilverStripe\Security\Member;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldPageCount;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
@@ -25,18 +26,18 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
  * @property string $Notes
  * @property string $Reviewed
  * @property string $Reminded
+ * @property int $CompanyID
+ * @property int $MemberCompanyID
  * @property int $TypeID
  * @property int $FileID
  * @property int $MemberID
  * @property int $ReviewMemberID
- * @property int $CompanyID
- * @property int $MemberCompanyID
+ * @method \Company Company()
+ * @method \Company MemberCompany()
  * @method \LegalFileType Type()
  * @method \SilverStripe\Assets\File File()
  * @method \SilverStripe\Security\Member Member()
  * @method \SilverStripe\Security\Member ReviewMember()
- * @method \Company Company()
- * @method \Company MemberCompany()
  * @mixin \MyLegalFile
  */
 class LegalFile extends DataObject
