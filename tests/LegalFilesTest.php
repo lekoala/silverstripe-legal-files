@@ -35,9 +35,7 @@ class LegalFilesTest extends SapphireTest
         $files = LegalFile::get()
             ->filter('ExpirationDate:LessThan', date('Y-m-d', strtotime('+ 15 days')))
             ->exclude('MemberID', 0)
-            ->where('Reminded IS NULL') // In 3.1 filter = null is not working
-        ;
-
+            ->where('Reminded IS NULL');
 
         $this->assertNotEquals(0, $files->count());
     }

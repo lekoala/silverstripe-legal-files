@@ -38,7 +38,7 @@ class LegalFileType extends DataObject
     private static $default_sort = array(
         'Title ASC'
     );
-    private static $default_records= [
+    private static $default_records = [
         [
             'Title' => 'National ID Card',
             'ApplyOnlyTo' => 'Member',

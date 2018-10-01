@@ -4,6 +4,7 @@ use SilverStripe\Assets\File;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DateField;
 use SilverStripe\Security\Member;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\GridField\GridField;
@@ -16,6 +17,7 @@ use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 use SilverStripe\Forms\GridField\GridFieldFilterHeader;
 use SilverStripe\Forms\GridField\GridFieldSortableHeader;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Control\Director;
 
 /**
  * Store a legal file
@@ -49,41 +51,47 @@ class LegalFile extends DataObject
     const STATUS_INVALID = 'Invalid';
     const STATUS_WAITING = 'Waiting';
 
-    private static $db = array(
+    private static $db = [
         'ExpirationDate' => 'Date',
         'Status' => "Enum('Waiting,Valid,Invalid','Waiting')",
         'Notes' => 'Text',
         'Reviewed' => 'Datetime',
         'Reminded' => 'Datetime',
-    );
-    private static $has_one = array(
+    ];
+    private static $has_one = [
         'Type' => 'LegalFileType',
         'File' => File::class,
         'Member' => Member::class,
         'ReviewMember' => Member::class,
-    );
-    private static $summary_fields = array(
+    ];
+    private static $summary_fields = [
         'Member.Surname' => 'Surname',
         'Member.FirstName' => 'First Name',
         'Created' => 'Uploaded',
         'Reminded' => 'Reminded',
-    );
+    ];
+    private static $owns = [
+        "File"
+    ];
+    private static $cascade_delete = [
+        "File"
+    ];
     /**
      * @link https://docs.silverstripe.org/en/4/developer_guides/model/scaffolding/
      * @var array
      */
-    private static $searchable_fields = array(
+    private static $searchable_fields = [
         'Member.Surname',
         'Member.FirstName',
         'Created',
         'Reminded',
-    );
-    private static $default_sort = array(
+    ];
+    private static $default_sort = [
         'ExpirationDate ASC'
-    );
-    private static $better_buttons_actions = array(
+    ];
+    private static $better_buttons_actions = [
         'doValid', 'doInvalid', 'doWaiting'
-    );
+    ];
 
     public static function listValidExtensions()
     {
@@ -351,7 +359,7 @@ class LegalFile extends DataObject
             $ext = $f->getExtension();
             $newName = 'Doc' . $this->ID . '.' . $ext;
             if ($newName != $f->getField('Name')) {
-                $f->setName($newName);
+                $f->Name = $newName;
                 $f->write();
             }
         }
@@ -490,8 +498,8 @@ class LegalFile extends DataObject
                 $fields->removeByName('Reviewed');
             } else {
                 $fields->replaceField('Reviewed', new ReadonlyField('ReviewedBy', $this->fieldLabel('Reviewed'), _t('LegalFile.REVIEWED_BY', "Reviewed at {date} by {member}", [
-                        'date' => $this->Reviewed,
-                        'member' => $this->ReviewMemberID ? $this->ReviewMember()->getTitle() : 'unknown'
+                    'date' => $this->Reviewed,
+                    'member' => $this->ReviewMemberID ? $this->ReviewMember()->getTitle() : 'unknown'
                 ])));
             }
 
@@ -499,11 +507,8 @@ class LegalFile extends DataObject
         }
 
         if (self::config()->enable_storage) {
-            /* @var $File UploadField */
-            $File = $fields->dataFieldByName('File');
-            $File->setCanAttachExisting(false);
+            $File = $this->getUploadField($fields);
             $File->setFolderName(self::config()->upload_folder);
-            $File->setTemplateFileButtons('LegalUploadField_FileButtons');
             $File->getValidator()->setAllowedExtensions(self::listValidExtensions());
             $File->getValidator()->setAllowedMaxFileSize(self::getMaxSize());
 
@@ -511,9 +516,9 @@ class LegalFile extends DataObject
             if ($this->FileID) {
                 $file = $this->File();
 
-                // Only show if previewable
-                if (in_array($file->getExtension(), array('jpg', 'png', 'pdf'))) {
-                    $previewLink = $file->Link() . '?inline=true';
+                // Only show if previewable (images only, pdf does not always work)
+                if (in_array($file->getExtension(), ['jpg', 'png'])) {
+                    $previewLink = $this->Link(['inline' => true]);
 
                     $iframe = new LiteralField('iframe', '<iframe src="' . $previewLink . '" style="width:100%;background:#fff;min-height:100%;min-height:500px;vertical-align:top"></iframe>');
 
@@ -521,7 +526,7 @@ class LegalFile extends DataObject
                 }
 
                 // Downloadable button
-                $fields->insertAfter(new LiteralField('download_link', '<a class="ss-ui-button" href="' . $file->Link() . '">' . _t('LegalFile.DOWNLOAD_FILE', 'Download file') . '</a>'), 'File');
+                $fields->insertAfter(new LiteralField('download_link', '<a class="ss-ui-button" href="' . $this->Link() . '">' . _t('LegalFile.DOWNLOAD_FILE', 'Download file') . '</a>'), 'File');
             }
         } else {
             $fields->removeByName('File');
@@ -597,5 +602,23 @@ class LegalFile extends DataObject
         }
 
         return $fields;
+    }
+
+    public function Link($params = [])
+    {
+        $params = array_merge(['id' => $this->FileID, $params]);
+        return Director::absoluteURL('_legalfiles/?' . http_build_query($params));
+    }
+
+    /**
+     * IDE Helper
+     *
+     * @param FieldList $fields
+     * @return UploadField
+     */
+    protected function getUploadField($fields)
+    {
+        $File = $fields->dataFieldByName('File');
+        return $File;
     }
 }
