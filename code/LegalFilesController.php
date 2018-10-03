@@ -12,6 +12,7 @@ use SilverStripe\Versioned\Versioned;
 
 /**
  * A simple controller
+ *
  */
 class LegalFilesController extends Controller
 {

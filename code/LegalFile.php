@@ -430,8 +430,15 @@ class LegalFile extends DataObject
     {
         $classes = LegalFilesExtension::listClassesWithLegalFile();
         $has_one = self::config()->has_one;
+        $ignoredRelations = [];
+        if ($this->hasMethod('getIgnoredLegalFilesRelations')) {
+            $ignoredRelations = $this->getIgnoredLegalFilesRelations();
+        }
         foreach ($has_one as $rel => $cl) {
             if (!in_array($cl, $classes)) {
+                continue;
+            }
+            if (in_array($rel, $ignoredRelations)) {
                 continue;
             }
             $f = $rel . 'ID';

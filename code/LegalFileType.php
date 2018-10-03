@@ -2,6 +2,7 @@
 
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
+use SilverStripe\Forms\ListboxField;
 
 /**
  * Describe a type of legal file
@@ -90,7 +91,6 @@ class LegalFileType extends DataObject
                 $labels[$class] = $singl->i18n_singular_name();
             }
             $fields->replaceField('ApplyOnlyTo', $ApplyOnlyTo = new ListboxField('ApplyOnlyTo', $this->fieldLabel('ApplyOnlyTo'), $labels));
-            $ApplyOnlyTo->setMultiple(true);
         } else {
             $fields->removeByName('ApplyOnlyTo');
         }
