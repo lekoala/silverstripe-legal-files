@@ -111,7 +111,7 @@ class LegalFilesExtension extends DataExtension
     {
         $days = LegalFile::config()->days_before_reminder;
         return $this->owner->LegalFiles()
-                ->filter('ExpirationDate:LessThan', date('Y-m-d', strtotime('+' . $days . ' days')));
+            ->filter('ExpirationDate:LessThan', date('Y-m-d', strtotime('+' . $days . ' days')));
     }
 
     /**
@@ -279,6 +279,9 @@ class LegalFilesExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields)
     {
+        if (!$this->owner->ID) {
+            $fields->removeByName('LegalState');
+        }
         /* @var $legalFiles GridField */
         $legalFiles = $fields->dataFieldByName('LegalFiles');
         if ($legalFiles) {
