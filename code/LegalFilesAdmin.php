@@ -10,7 +10,7 @@ use SilverStripe\Forms\GridField\GridFieldDataColumns;
  *
  * @author Koala
  */
-class LegalFileAdmin extends ModelAdmin
+class LegalFilesAdmin extends ModelAdmin
 {
     private static $managed_models = array(
         'LegalFile', 'LegalFileType'
