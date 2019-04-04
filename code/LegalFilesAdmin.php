@@ -65,13 +65,13 @@ class LegalFilesAdmin extends ModelAdmin
                     if (!$val) {
                         return;
                     }
-                    return '<a href="' . LegalFileAdmin::buildMemberEditLink($item) . '">' . $val . '</a>';
+                    return '<a href="' . LegalFilesAdmin::buildMemberEditLink($item) . '">' . $val . '</a>';
                 },
                 'Member.FirstName' => function ($val, $item) {
                     if (!$val) {
                         return;
                     }
-                    return '<a href="' . LegalFileAdmin::buildMemberEditLink($item) . '">' . $val . '</a>';
+                    return '<a href="' . LegalFilesAdmin::buildMemberEditLink($item) . '">' . $val . '</a>';
                 },
             ));
         }
