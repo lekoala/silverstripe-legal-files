@@ -279,8 +279,11 @@ class LegalFilesExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields)
     {
+        $LegalState = $fields->dataFieldByName("LegalState");
         if (!$this->owner->ID) {
             $fields->removeByName('LegalState');
+        } else {
+            $fields->addFieldToTab("Root.LegalFiles", $LegalState, "LegalFiles");
         }
         /* @var $legalFiles GridField */
         $legalFiles = $fields->dataFieldByName('LegalFiles');
