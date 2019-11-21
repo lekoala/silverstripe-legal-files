@@ -533,7 +533,7 @@ class LegalFile extends DataObject
                 }
 
                 // Downloadable button
-                $fields->insertAfter(new LiteralField('download_link', '<a class="ss-ui-button" href="' . $this->Link() . '">' . _t('LegalFile.DOWNLOAD_FILE', 'Download file') . '</a>'), 'File');
+                $fields->insertAfter(new LiteralField('download_link', '<a class="ss-ui-button" target="_blank" href="' . $this->Link() . '">' . _t('LegalFile.DOWNLOAD_FILE', 'Download file') . '</a>'), 'File');
             }
         } else {
             $fields->removeByName('File');
