@@ -59,12 +59,13 @@ class LegalFile extends DataObject
         'Notes' => 'Text',
         'Reviewed' => 'Datetime',
         'Reminded' => 'Datetime',
+        // we don't use has one relation to avoid multiple members relation
+        'ReviewMemberID' => 'Int',
     ];
     private static $has_one = [
         'Type' => 'LegalFileType',
         'File' => File::class,
         'Member' => Member::class,
-        'ReviewMember' => Member::class,
     ];
     private static $summary_fields = [
         'Member.Surname' => 'Surname',
