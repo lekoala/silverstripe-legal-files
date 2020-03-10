@@ -412,6 +412,21 @@ class LegalFile extends DataObject
      */
     public function OwnerClass()
     {
+        $object = $this->OwnerObject();
+        if ($object) {
+            return get_class($object);
+        }
+        return null;
+    }
+
+    /**
+     * Return owner as a DataObject
+     *
+     * @param bool $onlyID
+     * @return DataObject
+     */
+    public function OwnerObject($onlyID = false)
+    {
         $classes = LegalFilesExtension::listClassesWithLegalFile();
         $has_one = self::config()->has_one;
         $ignoredRelations = [];
@@ -427,26 +442,9 @@ class LegalFile extends DataObject
             }
             $f = $rel . 'ID';
             if ($this->$f) {
-                return $cl;
-            }
-        }
-    }
-
-    /**
-     * Return owner as a DataObject
-     *
-     * @return DataObject
-     */
-    public function OwnerObject()
-    {
-        $classes = LegalFilesExtension::listClassesWithLegalFile();
-        $has_one = self::config()->has_one;
-        foreach ($has_one as $rel => $cl) {
-            if (!in_array($cl, $classes)) {
-                continue;
-            }
-            $f = $rel . 'ID';
-            if ($this->$f) {
+                if ($onlyID) {
+                    return $this->$f;
+                }
                 return $this->$rel();
             }
         }
@@ -457,17 +455,7 @@ class LegalFile extends DataObject
      */
     public function OwnerID()
     {
-        $classes = LegalFilesExtension::listClassesWithLegalFile();
-        $has_one = self::config()->has_one;
-        foreach ($has_one as $rel => $cl) {
-            if (!in_array($cl, $classes)) {
-                continue;
-            }
-            $f = $rel . 'ID';
-            if ($this->$f) {
-                return $this->$f;
-            }
-        }
+        return $this->OwnerObject(true);
     }
 
     public function getCMSFields()
@@ -555,7 +543,7 @@ class LegalFile extends DataObject
             $newField = null;
             $fieldName = $class . 'ID';
 
-            // We have a current owner, simple show a grid field
+            // We have a current owner, display its details in a gridfield
             if ($ownerClass) {
                 $this->OwnerObject()->refreshLegalState(true);
 
