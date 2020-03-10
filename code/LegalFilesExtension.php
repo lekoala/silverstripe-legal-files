@@ -34,7 +34,7 @@ class LegalFilesExtension extends DataExtension
         'LegalState' => "Enum('none,invalid,valid','none')",
     );
     private static $has_many = array(
-        'LegalFiles' => 'LegalFile',
+        'LegalFiles' => 'LegalFile.Member',
     );
     protected static $legalFileObjects;
     private static $better_buttons_actions = array(
