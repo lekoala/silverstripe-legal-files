@@ -3,6 +3,7 @@
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Forms\ListboxField;
+use SilverStripe\Assets\FileNameFilter;
 
 /**
  * Describe a type of legal file

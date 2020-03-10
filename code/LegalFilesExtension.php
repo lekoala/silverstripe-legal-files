@@ -1,6 +1,7 @@
 <?php
 
 use SilverStripe\Forms\Form;
+use SilverStripe\Assets\File;
 use SilverStripe\Assets\Folder;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\ORM\DataObject;
@@ -49,18 +50,6 @@ class LegalFilesExtension extends DataExtension
                 return _t('LegalFilesExtension.STATE_INVALID', 'Invalid');
             case self::STATE_VALID:
                 return _t('LegalFilesExtension.STATE_VALID', 'Valid');
-        }
-    }
-
-    public function updateBetterButtonsActions(FieldList $actions)
-    {
-        // If the owner is not created, no need to check anything
-        if (!$this->owner->ID) {
-            return;
-        }
-        $files = $this->getAboutToExpireLegalFiles()->where('Reminded IS NULL');
-        if ($files->count()) {
-            $actions->push(new BetterButtonCustomAction('doSendLegalFilesReminder', _t('LegalFile.SEND_REMINDER', 'Send legal documents reminder')));
         }
     }
 
@@ -161,7 +150,6 @@ class LegalFilesExtension extends DataExtension
         $parentFolder = Folder::find_or_make($folderPath);
 
         $name = 'Doc' . $lf->ID . '.' . strtolower($extension);
-
 
         $relativeFolderPath = $parentFolder ? $parentFolder->getRelativePath() : ASSETS_DIR . '/';
         $relativeFilePath = $relativeFolderPath . $name;

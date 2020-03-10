@@ -2,7 +2,6 @@
 
 use SilverStripe\Assets\Folder;
 use SilverStripe\Admin\ModelAdmin;
-use SilverStripe\Control\Director;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
 
 /**

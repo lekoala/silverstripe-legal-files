@@ -1,10 +1,12 @@
 <?php
 
 use SilverStripe\Forms\Form;
+use SilverStripe\Assets\File;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FileField;
 use SilverStripe\Security\Member;
 use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\RequiredFields;
 
 /**

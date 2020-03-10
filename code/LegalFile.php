@@ -1,12 +1,15 @@
 <?php
 
 use SilverStripe\Assets\File;
+use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DateField;
 use SilverStripe\Security\Member;
+use SilverStripe\Control\Director;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldPageCount;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
@@ -17,7 +20,6 @@ use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 use SilverStripe\Forms\GridField\GridFieldFilterHeader;
 use SilverStripe\Forms\GridField\GridFieldSortableHeader;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-use SilverStripe\Control\Director;
 
 /**
  * Store a legal file
@@ -137,25 +139,6 @@ class LegalFile extends DataObject
         return _t('LegalFile.STATUS_WAITING', 'Marked as waiting');
     }
 
-    public function getBetterButtonsActions()
-    {
-        $fields = parent::getBetterButtonsActions();
-
-        if (self::config()->validation_workflow) {
-            if ($this->Status != self::STATUS_INVALID) {
-                $fields->push(new BetterButtonCustomAction('doInvalid', _t('LegalFile.MARK_INVALID', 'Is invalid')));
-            }
-            if ($this->Status != self::STATUS_VALID) {
-                $fields->push(new BetterButtonCustomAction('doValid', _t('LegalFile.MARK_VALID', 'Is valid')));
-            }
-            if ($this->Status != self::STATUS_WAITING) {
-                $fields->push(new BetterButtonCustomAction('doWaiting', _t('LegalFile.MARK_WAITING', 'Is waiting')));
-            }
-        }
-
-        return $fields;
-    }
-
     public function summaryFields()
     {
         $fields = parent::summaryFields();
@@ -207,7 +190,7 @@ class LegalFile extends DataObject
      */
     public function getFormattedDate()
     {
-        $date = new Date();
+        $date = new DBDate();
         $date->setValue($this->LastEdited);
         return Convert::raw2xml($date->Nice());
     }
@@ -590,7 +573,7 @@ class LegalFile extends DataObject
                 $summaryFields = singleton($class)->summaryFields();
                 $summaryFields['TranslatedLegalState'] = _t('LegalFile.LegalState', 'Legal State');
                 /* @var $cols GridFieldDataColumns */
-                $cols = $gfc->getComponentByType(GridFieldDataColumns::class);
+                $cols = $this->getGridFieldDataColumns($gfc);
                 if ($cols) {
                     $cols->setDisplayFields($summaryFields);
                 }
@@ -609,6 +592,15 @@ class LegalFile extends DataObject
         }
 
         return $fields;
+    }
+
+    /**
+     * @param GridFieldConfig $gfc
+     * @return GridFieldDataColumns
+     */
+    protected function getGridFieldDataColumns($gfc)
+    {
+        return $gfc->getComponentByType(GridFieldDataColumns::class);
     }
 
     public function Link($params = [])
