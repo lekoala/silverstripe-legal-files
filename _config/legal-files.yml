@@ -15,6 +15,7 @@ LegalFile:
   admin_to: ''
   enable_storage: true
   upload_folder: 'LegalFiles'
+  default_none_state: true
 SilverStripe\Control\Director:
   rules:
     '_legalfiles': 'LegalFilesController'

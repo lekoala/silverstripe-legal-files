@@ -32,6 +32,7 @@ class LegalFilesExtension extends DataExtension
 
     private static $db = array(
         'LegalState' => "Enum('none,invalid,valid','none')",
+        'LegalStateChanged' => "Datetime",
     );
     private static $has_many = array(
         'LegalFiles' => 'LegalFile',
@@ -238,7 +239,7 @@ class LegalFilesExtension extends DataExtension
     public function refreshLegalState($writeIfChanged = false)
     {
         $files = $this->owner->LegalFiles();
-        if ($files->count() == 0) {
+        if ($files->count() == 0 && LegalFile::config()->default_none_state) {
             $this->owner->LegalState = self::STATE_NONE;
         } else {
             $state = self::STATE_VALID;
@@ -253,6 +254,7 @@ class LegalFilesExtension extends DataExtension
 
         if ($writeIfChanged) {
             if ($this->owner->isChanged('LegalState', 2)) {
+                $this->owner->LegalStateChanged = date('Y-m-d H:i:s');
                 $this->owner->write();
             }
         }
@@ -263,15 +265,21 @@ class LegalFilesExtension extends DataExtension
         parent::onBeforeWrite();
 
         $this->refreshLegalState();
+        if ($this->owner->isChanged('LegalState', 2)) {
+            $this->owner->LegalStateChanged = date('Y-m-d H:i:s');
+        }
     }
 
     public function updateCMSFields(FieldList $fields)
     {
         $LegalState = $fields->dataFieldByName("LegalState");
+        $LegalStateChanged = $fields->dataFieldByName("LegalStateChanged");
         if (!$this->owner->ID) {
             $fields->removeByName('LegalState');
+            $fields->removeByName('LegalStateChanged');
         } else {
             $fields->addFieldToTab("Root.LegalFiles", $LegalState, "LegalFiles");
+            $fields->addFieldToTab("Root.LegalFiles", $LegalStateChanged, "LegalFiles");
         }
         /* @var $legalFiles GridField */
         $legalFiles = $fields->dataFieldByName('LegalFiles');
