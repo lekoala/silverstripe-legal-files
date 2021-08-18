@@ -42,6 +42,26 @@ class LegalFilesExtension extends DataExtension
         'doSendLegalFilesReminder'
     );
 
+    public function IsLegalStateValid()
+    {
+        return $this->owner->LegalState == self::STATE_VALID;
+    }
+
+    public function IsLegalStateInvalid()
+    {
+        return $this->owner->LegalState == self::STATE_INVALID;
+    }
+
+    public function IsLegalStateNotSet()
+    {
+        return $this->owner->LegalState == self::STATE_NONE;
+    }
+
+    public function IsLegalStateSet()
+    {
+        return $this->owner->LegalState != self::STATE_NONE;
+    }
+
     public function TranslatedLegalState()
     {
         switch ($this->owner->LegalState) {
