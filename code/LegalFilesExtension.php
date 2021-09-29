@@ -38,9 +38,6 @@ class LegalFilesExtension extends DataExtension
         'LegalFiles' => 'LegalFile',
     );
     protected static $legalFileObjects;
-    private static $better_buttons_actions = array(
-        'doSendLegalFilesReminder'
-    );
 
     public function IsLegalStateValid()
     {

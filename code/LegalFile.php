@@ -92,9 +92,6 @@ class LegalFile extends DataObject
     private static $default_sort = [
         'ExpirationDate ASC'
     ];
-    private static $better_buttons_actions = [
-        'doValid', 'doInvalid', 'doWaiting'
-    ];
 
     public static function listValidExtensions()
     {
@@ -105,7 +102,6 @@ class LegalFile extends DataObject
     {
         $this->Status = self::STATUS_VALID;
         $this->write();
-
 
         $template = 'LegalFilesDocumentValidEmail';
         $emailTitle = _t('LegalFilesDocumentValidEmail.SUBJECT', "A legal document has been marked has valid");

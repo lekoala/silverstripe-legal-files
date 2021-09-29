@@ -31,7 +31,7 @@ class LegalFileType extends DataObject
         'Files' => 'LegalFile',
     );
     private static $summary_fields = array(
-        'Title',
+        'Title', 'Description'
     );
     private static $field_labels = array(
         'CannotExpire' => "Cannot expire",
