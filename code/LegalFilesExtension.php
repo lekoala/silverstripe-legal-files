@@ -71,6 +71,11 @@ class LegalFilesExtension extends DataExtension
         }
     }
 
+    public static function listLegalStates()
+    {
+        return [self::STATE_NONE, self::STATE_VALID, self::STATE_INVALID];
+    }
+
     /**
      * A list of files with legal files
      * @return array
@@ -172,8 +177,7 @@ class LegalFilesExtension extends DataExtension
         $relativeFolderPath = $parentFolder ? $parentFolder->getRelativePath() : ASSETS_DIR . '/';
         $relativeFilePath = $relativeFolderPath . $name;
 
-        move_uploaded_file($filename, $base . '/' . $relativeFilePath);
-
+        $file->setFromLocalFile($filename);
         $file->OwnerID = Member::currentUserID();
         $file->ParentID = $parentFolder ? $parentFolder->ID : 0;
         // This is to prevent it from trying to rename the file
@@ -250,6 +254,29 @@ class LegalFilesExtension extends DataExtension
         return $res;
     }
 
+    public function forceLegalState($state)
+    {
+        if (!in_array($state, self::listLegalStates())) {
+            throw new Exception("Invalid state $state");
+        }
+        $files = $this->owner->LegalFiles();
+        switch ($state) {
+            case self::STATE_NONE:
+                // delete all files
+                foreach ($files as $file) {
+                    $file->delete();
+                }
+            case self::STATE_INVALID:
+                foreach ($files->filter('Status', 'Valid') as $file) {
+                    $file->delete();
+                }
+            case self::STATE_VALID:
+                foreach ($files->filter('Status', 'Invalid') as $file) {
+                    $file->delete();
+                }
+        }
+    }
+
     /**
      * Refresh legal state based on current legal files
      */
@@ -267,13 +294,11 @@ class LegalFilesExtension extends DataExtension
                 }
             }
             $this->owner->LegalState = $state;
+            $this->owner->LegalStateChanged = date('Y-m-d H:i:s');
         }
 
-        if ($writeIfChanged) {
-            if ($this->owner->isChanged('LegalState', 2)) {
-                $this->owner->LegalStateChanged = date('Y-m-d H:i:s');
-                $this->owner->write();
-            }
+        if ($writeIfChanged && $this->owner->isChanged('LegalState', DataObject::CHANGE_VALUE)) {
+            $this->owner->write();
         }
     }
 
@@ -282,9 +307,6 @@ class LegalFilesExtension extends DataExtension
         parent::onBeforeWrite();
 
         $this->refreshLegalState();
-        if ($this->owner->isChanged('LegalState', 2)) {
-            $this->owner->LegalStateChanged = date('Y-m-d H:i:s');
-        }
     }
 
     public function updateCMSFields(FieldList $fields)

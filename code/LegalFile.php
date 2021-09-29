@@ -541,7 +541,7 @@ class LegalFile extends DataObject
 
             // We have a current owner, display its details in a gridfield
             if ($ownerClass) {
-                $this->OwnerObject()->refreshLegalState(true);
+                // $this->OwnerObject()->refreshLegalState(true);
 
                 $gfc = GridFieldConfig_RecordEditor::create();
                 $gfc->removeComponentsByType(GridFieldSortableHeader::class);
