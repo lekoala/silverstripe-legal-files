@@ -259,20 +259,26 @@ class LegalFilesExtension extends DataExtension
         if (!in_array($state, self::listLegalStates())) {
             throw new Exception("Invalid state $state");
         }
+        $this->owner->LegalState = $state;
         $files = $this->owner->LegalFiles();
         switch ($state) {
             case self::STATE_NONE:
-                // delete all files
                 foreach ($files as $file) {
-                    $file->delete();
+                    $file->Status = "Waiting";
+                    $file->write();
+                    // $file->delete();
                 }
             case self::STATE_INVALID:
                 foreach ($files->filter('Status', 'Valid') as $file) {
-                    $file->delete();
+                    $file->Status = "Waiting";
+                    $file->write();
+                    // $file->delete();
                 }
             case self::STATE_VALID:
                 foreach ($files->filter('Status', 'Invalid') as $file) {
-                    $file->delete();
+                    $file->Status = "Waiting";
+                    $file->write();
+                    // $file->delete();
                 }
         }
     }
