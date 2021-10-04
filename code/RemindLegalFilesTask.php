@@ -28,6 +28,10 @@ class RemindLegalFilesTask implements CronTask
      */
     public function process()
     {
+        $enable_reminder = LegalFile::config()->enable_reminder;
+        if (!$enable_reminder) {
+            return 'Disabled';
+        }
         $days = LegalFile::config()->days_before_reminder;
         if (!$days) {
             return 'No days before reminder have been set';

@@ -9,6 +9,7 @@ SilverStripe\Security\Member:
 LegalFile:
   valid_extensions: ['jpeg','jpg','png','pdf']
   days_before_reminder: 60
+  enable_reminder: true
   max_size: '12M'
   validation_workflow: true
   admin_emails: true
