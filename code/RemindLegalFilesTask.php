@@ -57,6 +57,10 @@ class RemindLegalFilesTask implements CronTask
             $files = $fileByMember['Children'];
 
             $Member = Member::get()->byID($MemberID);
+            if(!$Member) {
+                $res[] = "Member " . $MemberID . " not found";
+                continue;
+            }
             $sent = $Member->sendLegalFilesReminder($files);
 
             if ($sent) {
