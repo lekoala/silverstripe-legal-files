@@ -1,15 +1,12 @@
-SilverStripe Legal Files module
-==================
+# SilverStripe Legal Files module
 
 WARNING : This is very much work in progress!
 
-Introduction
-------------------
+## Introduction
 
 This module adds a new admin section to allow administration of legal files.
 
-Attaching to other classes
-------------------
+## Attaching to other classes
 
 Legal files always belong to a Member but can also be attached to any DataObject
 through the LegalFileExtension (for example, for a Company).
@@ -32,21 +29,18 @@ a has_one relation for each class through a DataExtension, like so:
         }
     }
 
-Securing assets
-------------------
+## Securing assets
 
 The root folder will get an htaccess that will redirect all requests to a
 dedicated controller. This will only work with Apache.
 TODO : support private assets or secure assets module.
 
-Remind members about expiring document
-------------------
+## Remind members about expiring document
 
 A Cron task allows you to remind members about expiring document. You can
 overwrite the html template.
 
-Adding colors to rows (3.4+)
-------------------
+## Adding colors to rows (3.4+)
 
 Make sure you have the following GridField extension :
 
@@ -75,10 +69,10 @@ And the following css :
     .cms table.ss-gridfield-table tr.red.odd { background-color: #F2DEDE; }
     .cms table.ss-gridfield-table tr.red.even { background-color: #EBCCD1; }
 
-Compatibility
-==================
+# Compatibility
+
 Tested with ^4.1
 
-Maintainer
-==================
+# Maintainer
+
 LeKoala - thomas@lekoala.be

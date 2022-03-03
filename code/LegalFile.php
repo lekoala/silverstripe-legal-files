@@ -6,6 +6,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DateField;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ReadonlyField;
@@ -531,13 +532,17 @@ class LegalFile extends DataObject
         // Filter fields that are not needed, we can only attach to one record
         $classes = LegalFilesExtension::listClassesWithLegalFile();
         foreach ($classes as $class) {
-            if ($ownerClass && $class != $ownerClass) {
+            $subClasses = ClassInfo::subclassesFor($class);
+            if ($ownerClass && !in_array($ownerClass, array_values($subClasses))) {
                 $fields->removeByName($class . 'ID');
                 continue;
             }
 
+            $parts = explode('\\', $class);
+            $simpleClass = end($parts);
+
             $newField = null;
-            $fieldName = $class . 'ID';
+            $fieldName = $simpleClass . 'ID';
 
             // We have a current owner, display its details in a gridfield
             if ($ownerClass) {

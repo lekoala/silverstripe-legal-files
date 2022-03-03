@@ -308,16 +308,34 @@ class LegalFilesExtension extends DataExtension
         }
     }
 
+    public function getBinaryLegalState()
+    {
+        switch ($this->owner->LegalState) {
+            case self::STATE_INVALID:
+                return '0';
+            case self::STATE_VALID:
+                return '1';
+            case self::STATE_NONE:
+                return '';
+        }
+    }
+
     public function onBeforeWrite()
     {
         parent::onBeforeWrite();
 
-        $this->refreshLegalState();
+        if (LegalFile::config()->do_onbefore_write) {
+            $this->refreshLegalState();
+        }
     }
 
     public function updateCMSFields(FieldList $fields)
     {
-        /* @var $legalFiles GridField */
+        if (!LegalFile::config()->update_cms_fields) {
+            return;
+        }
+
+        /** @var GridField $legalFiles */
         $legalFiles = $fields->dataFieldByName('LegalFiles');
 
         $LegalState = $fields->dataFieldByName("LegalState");
@@ -335,8 +353,8 @@ class LegalFilesExtension extends DataExtension
 
             // Update summary fields
 
-            /* @var $dc GridFieldDataColumns */
             if ($this->owner instanceof Member) {
+                /** @var GridFieldDataColumns $dc */
                 $dc = $config->getComponentByType(GridFieldDataColumns::class);
                 $displayFields = $dc->getDisplayFields($legalFiles);
                 unset($displayFields['Member.FirstName']);
@@ -353,7 +371,7 @@ class LegalFilesExtension extends DataExtension
 
             // Assign
 
-            /* @var $detailForm GridFieldDetailForm */
+            /** @var GridFieldDetailForm $detailForm */
             $detailForm = $config->getComponentByType(GridFieldDetailForm::class);
             $owner = $this->owner;
             $detailForm->setItemEditFormCallback(function (Form $form) use ($owner) {
