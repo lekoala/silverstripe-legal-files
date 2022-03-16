@@ -335,6 +335,8 @@ class LegalFilesExtension extends DataExtension
             return;
         }
 
+        $tabName = LegalFile::config()->tab_name;
+
         /** @var GridField $legalFiles */
         $legalFiles = $fields->dataFieldByName('LegalFiles');
 
@@ -345,8 +347,8 @@ class LegalFilesExtension extends DataExtension
             $fields->removeByName('LegalStateChanged');
         } else {
             $insertBefore = $legalFiles ? "LegalFiles" : null;
-            $fields->addFieldToTab("Root.LegalFiles", $LegalState, $insertBefore);
-            $fields->addFieldToTab("Root.LegalFiles", $LegalStateChanged, $insertBefore);
+            $fields->addFieldToTab("Root." . $tabName, $LegalState, $insertBefore);
+            $fields->addFieldToTab("Root." . $tabName, $LegalStateChanged, $insertBefore);
         }
         if ($legalFiles) {
             $config = $legalFiles->getConfig();
