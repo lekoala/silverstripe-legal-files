@@ -376,14 +376,16 @@ class LegalFilesExtension extends DataExtension
             /** @var GridFieldDetailForm $detailForm */
             $detailForm = $config->getComponentByType(GridFieldDetailForm::class);
             $owner = $this->owner;
-            $detailForm->setItemEditFormCallback(function (Form $form) use ($owner) {
-                $parts = explode('\\', get_class($owner));
-                $class = end($parts);
+            if ($detailForm) {
+                $detailForm->setItemEditFormCallback(function (Form $form) use ($owner) {
+                    $parts = explode('\\', get_class($owner));
+                    $class = end($parts);
 
-                // This assume that relation = class without namespace
-                $fieldName = $class . 'ID';
-                $form->Fields()->push(new HiddenField($fieldName, null, $owner->ID));
-            });
+                    // This assume that relation = class without namespace
+                    $fieldName = $class . 'ID';
+                    $form->Fields()->push(new HiddenField($fieldName, null, $owner->ID));
+                });
+            }
         }
     }
 }
