@@ -358,10 +358,12 @@ class LegalFilesExtension extends DataExtension
             if ($this->owner instanceof Member) {
                 /** @var GridFieldDataColumns $dc */
                 $dc = $config->getComponentByType(GridFieldDataColumns::class);
-                $displayFields = $dc->getDisplayFields($legalFiles);
-                unset($displayFields['Member.FirstName']);
-                unset($displayFields['Member.Surname']);
-                $dc->setDisplayFields($displayFields);
+                if ($dc) {
+                    $displayFields = $dc->getDisplayFields($legalFiles);
+                    unset($displayFields['Member.FirstName']);
+                    unset($displayFields['Member.Surname']);
+                    $dc->setDisplayFields($displayFields);
+                }
             }
 
             // No link existing
