@@ -10,10 +10,12 @@
         "cms"
     ],
     "license": "MIT",
-    "authors": [{
-        "name": "LeKoala",
-        "email": "thomas@lekoala.be"
-    }],
+    "authors": [
+        {
+            "name": "LeKoala",
+            "email": "thomas@lekoala.be"
+        }
+    ],
     "require": {
         "php": ">=7",
         "silverstripe/framework": "^4.1",
@@ -21,6 +23,13 @@
     },
     "extra": {
         "installer-name": "legal-files"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "silverstripe/recipe-plugin": true,
+            "silverstripe/vendor-plugin": true
+        }
     },
     "support": {
         "issues": "https://github.com/lekoala/silverstripe-legal-files/issues"
