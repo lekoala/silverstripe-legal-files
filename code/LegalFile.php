@@ -391,6 +391,9 @@ class LegalFile extends DataObject
      */
     public static function TypesDatalist($forClass = null)
     {
+        if ($forClass === null) {
+            return LegalFileType::get()->filter('ID', 0);
+        }
         $parts = explode('\\', $forClass);
         $forClass = end($parts);
         $q = LegalFileType::get();
