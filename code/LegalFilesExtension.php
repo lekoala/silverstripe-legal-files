@@ -140,7 +140,7 @@ class LegalFilesExtension extends DataExtension
         $isNew = false;
 
         if ($lf->count() == 0) {
-            $class = $this->ownerBaseClass;
+            $class = get_class($this->owner);
             $rel = $class . 'ID';
             $lf = new LegalFile;
             $lf->TypeID = $typeID;
