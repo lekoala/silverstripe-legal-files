@@ -347,8 +347,12 @@ class LegalFilesExtension extends DataExtension
             $fields->removeByName('LegalStateChanged');
         } else {
             $insertBefore = $legalFiles ? "LegalFiles" : null;
-            $fields->addFieldToTab("Root." . $tabName, $LegalState, $insertBefore);
-            $fields->addFieldToTab("Root." . $tabName, $LegalStateChanged, $insertBefore);
+            if ($LegalState) {
+                $fields->addFieldToTab("Root." . $tabName, $LegalState, $insertBefore);
+            }
+            if ($LegalStateChanged) {
+                $fields->addFieldToTab("Root." . $tabName, $LegalStateChanged, $insertBefore);
+            }
         }
         if ($legalFiles) {
             $config = $legalFiles->getConfig();
