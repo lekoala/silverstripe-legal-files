@@ -1,7 +1,7 @@
 ---
 Name: legal-files
 After:
-  - "framework/*"
+  - "#rootroutes"
 ---
 LegalFile:
   exclude_from_fixture_relationships: true
