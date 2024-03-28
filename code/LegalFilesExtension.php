@@ -19,9 +19,9 @@ use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 /**
  * Simply apply this extension to any type of record that use legal files
  *
- * @author Koala
- * @property \SilverStripe\Security\Member|\LegalFilesExtension $owner
+ * @property \Company|\SilverStripe\Security\Member|\LegalFilesExtension $owner
  * @property string $LegalState
+ * @property string $LegalStateChanged
  * @method \SilverStripe\ORM\DataList|\LegalFile[] LegalFiles()
  */
 class LegalFilesExtension extends DataExtension

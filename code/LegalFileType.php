@@ -8,12 +8,11 @@ use SilverStripe\Assets\FileNameFilter;
 /**
  * Describe a type of legal file
  *
- * @author Koala
  * @property string $Title
  * @property string $Description
  * @property string $ApplyOnlyTo
- * @property boolean $CannotExpire
- * @property boolean $Mandatory
+ * @property bool $CannotExpire
+ * @property bool $Mandatory
  * @method \SilverStripe\ORM\DataList|\LegalFile[] Files()
  */
 class LegalFileType extends DataObject

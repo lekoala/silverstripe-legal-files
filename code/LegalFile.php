@@ -25,24 +25,22 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 /**
  * Store a legal file
  *
- * @author Koala
  * @property string $ExpirationDate
  * @property string $Status
  * @property string $Notes
  * @property string $Reviewed
  * @property string $Reminded
+ * @property int $ReviewMemberID
  * @property int $CompanyID
  * @property int $MemberCompanyID
  * @property int $TypeID
  * @property int $FileID
  * @property int $MemberID
- * @property int $ReviewMemberID
  * @method \Company Company()
  * @method \Company MemberCompany()
  * @method \LegalFileType Type()
  * @method \SilverStripe\Assets\File File()
  * @method \SilverStripe\Security\Member Member()
- * @method \SilverStripe\Security\Member ReviewMember()
  * @mixin \MyLegalFile
  */
 class LegalFile extends DataObject

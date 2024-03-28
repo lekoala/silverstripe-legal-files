@@ -7,7 +7,6 @@ use SilverStripe\Forms\GridField\GridFieldDataColumns;
 /**
  * Manage legal documents
  *
- * @author Koala
  */
 class LegalFilesAdmin extends ModelAdmin
 {
