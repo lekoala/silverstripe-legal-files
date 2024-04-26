@@ -11,8 +11,8 @@ use SilverStripe\Assets\FileNameFilter;
  * @property ?string $Title
  * @property ?string $Description
  * @property ?string $ApplyOnlyTo
- * @property bool $CannotExpire
- * @property bool $Mandatory
+ * @property bool|int $CannotExpire
+ * @property bool|int $Mandatory
  * @method \SilverStripe\ORM\DataList|\LegalFile[] Files()
  * @mixin \LeKoala\Base\Extensions\BaseDataObjectExtension
  * @mixin \SilverStripe\Assets\Shortcodes\FileLinkTracking
