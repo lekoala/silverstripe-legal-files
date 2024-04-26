@@ -42,6 +42,12 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
  * @method \SilverStripe\Assets\File File()
  * @method \SilverStripe\Security\Member Member()
  * @mixin \MyLegalFile
+ * @mixin \LeKoala\Base\Extensions\BaseDataObjectExtension
+ * @mixin \SilverStripe\Assets\Shortcodes\FileLinkTracking
+ * @mixin \SilverStripe\Assets\AssetControlExtension
+ * @mixin \SilverStripe\CMS\Model\SiteTreeLinkTracking
+ * @mixin \SilverStripe\Versioned\RecursivePublishable
+ * @mixin \SilverStripe\Versioned\VersionedStateExtension
  */
 class LegalFile extends DataObject
 {
