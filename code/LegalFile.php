@@ -25,11 +25,11 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 /**
  * Store a legal file
  *
- * @property string $ExpirationDate
- * @property string $Status
- * @property string $Notes
- * @property string $Reviewed
- * @property string $Reminded
+ * @property ?string $ExpirationDate
+ * @property ?string $Status
+ * @property ?string $Notes
+ * @property ?string $Reviewed
+ * @property ?string $Reminded
  * @property int $ReviewMemberID
  * @property int $CompanyID
  * @property int $MemberCompanyID

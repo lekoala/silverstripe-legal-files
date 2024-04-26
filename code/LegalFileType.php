@@ -8,9 +8,9 @@ use SilverStripe\Assets\FileNameFilter;
 /**
  * Describe a type of legal file
  *
- * @property string $Title
- * @property string $Description
- * @property string $ApplyOnlyTo
+ * @property ?string $Title
+ * @property ?string $Description
+ * @property ?string $ApplyOnlyTo
  * @property bool $CannotExpire
  * @property bool $Mandatory
  * @method \SilverStripe\ORM\DataList|\LegalFile[] Files()
