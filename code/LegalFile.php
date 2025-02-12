@@ -524,8 +524,8 @@ class LegalFile extends DataObject
         $fields->removeByName('TypeID');
         if (!empty($types)) {
             $fields->insertBefore(
+                'ExpirationDate',
                 new DropdownField('TypeID', $this->fieldLabel('Type'), $types),
-                'ExpirationDate'
             );
         }
 
