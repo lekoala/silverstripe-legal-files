@@ -22,7 +22,7 @@ use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
  * @property \Company|\SilverStripe\Security\Member|\LegalFilesExtension $owner
  * @property ?string $LegalState
  * @property ?string $LegalStateChanged
- * @method \SilverStripe\ORM\DataList|\LegalFile[] LegalFiles()
+ * @method \SilverStripe\ORM\DataList<\LegalFile> LegalFiles()
  */
 class LegalFilesExtension extends DataExtension
 {
