@@ -42,7 +42,6 @@ class LegalFilesTest extends SapphireTest
 
     public function testInvalidEmail()
     {
-        /* @var $waitingFile LegalFile */
         $waitingFile = LegalFile::get()->filter('Status', LegalFile::STATUS_WAITING)->first();
         $waitingFile->doInvalid();
 

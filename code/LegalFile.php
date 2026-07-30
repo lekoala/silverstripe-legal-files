@@ -21,6 +21,7 @@ use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 use SilverStripe\Forms\GridField\GridFieldFilterHeader;
 use SilverStripe\Forms\GridField\GridFieldSortableHeader;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Security\Security;
 
 /**
  * Store a legal file
@@ -330,7 +331,10 @@ class LegalFile extends DataObject
 
         if ($this->isChanged('Status', 2)) {
             $this->Reviewed = date('Y-m-d H:i:s');
-            $this->ReviewMemberID = Member::currentUserID();
+            $user = Security::getCurrentUser();
+            if ($user) {
+                $this->ReviewMemberID = $user->ID;
+            }
         }
     }
 

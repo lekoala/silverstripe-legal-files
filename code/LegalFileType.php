@@ -36,7 +36,8 @@ class LegalFileType extends DataObject
         'Files' => 'LegalFile',
     );
     private static $summary_fields = array(
-        'Title', 'Description'
+        'Title',
+        'Description'
     );
     private static $field_labels = array(
         'CannotExpire' => "Cannot expire",
@@ -92,7 +93,6 @@ class LegalFileType extends DataObject
         if (count($arr) > 1) {
             $labels = [];
             foreach ($arr as $class) {
-                /* @var $singl DataObject */
                 $singl = singleton($class);
                 $labels[$class] = $singl->i18n_singular_name();
             }
