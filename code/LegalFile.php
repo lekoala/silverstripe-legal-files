@@ -354,7 +354,7 @@ class LegalFile extends DataObject
         }
     }
 
-    public function validate()
+    public function validate(): \SilverStripe\Core\Validation\ValidationResult
     {
         $result = parent::validate();
         if (!$this->TypeID) {

@@ -109,7 +109,7 @@ class LegalFileType extends DataObject
         parent::onBeforeWrite();
     }
 
-    public function validate()
+    public function validate(): \SilverStripe\Core\Validation\ValidationResult
     {
         $result = parent::validate();
         if (!$this->Title) {

@@ -9,7 +9,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Director;
 use SilverStripe\Forms\HiddenField;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldDetailForm;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
@@ -24,7 +24,7 @@ use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
  * @property ?string $LegalStateChanged
  * @method \SilverStripe\ORM\DataList<\LegalFile> LegalFiles()
  */
-class LegalFilesExtension extends DataExtension
+class LegalFilesExtension extends Extension
 {
     const STATE_NONE = 'none'; // no legal files attached
     const STATE_INVALID = 'invalid'; // has some expired, missing or invalid documents
