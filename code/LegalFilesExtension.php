@@ -322,7 +322,6 @@ class LegalFilesExtension extends Extension
 
     public function onBeforeWrite()
     {
-        parent::onBeforeWrite();
 
         if (LegalFile::config()->do_onbefore_write) {
             $this->refreshLegalState();

@@ -7,7 +7,7 @@ use SilverStripe\Forms\FileField;
 use SilverStripe\Security\Member;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\LiteralField;
-use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator as RequiredFields;
 
 /**
  * A form to manage legal documents of current member

@@ -17,7 +17,7 @@ class LegalFileEmail
      * @param DataObject $dataobject
      * @param string $title
      * @param string $template
-     * @param array $templateData
+     * @param array|null $templateData
      * @return Email
      */
     public static function getEmail($dataobject, $title, $template, $templateData = null)
@@ -47,7 +47,7 @@ class LegalFileEmail
         if (!$email || !$email->body) {
             $email = new Email();
             $viewer = new SSViewer('email/' . $template);
-            $result = $viewer->process($dataobject, $templateData);
+            $result = $viewer->process($dataobject, $templateData ?? []);
             $body = (string) $result;
             $email->setBody($body);
         }
